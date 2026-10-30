@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>MAERS QuantiLife — 统计报告</title>
+  <meta name="description" content="MAERS QuantiLife 周/月/季/半年/年度统计报告" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f3efe6" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MAERS QLS" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="../common/ui/app-icon.svg" />
+  <link rel="apple-touch-icon" href="../common/ui/icon-192.png" />
+  <script src="../common/js/theme-boot.js"></script>
+  <link rel="stylesheet" href="../common/css/base.css" />
+  <link rel="stylesheet" href="../common/css/components.css" />
+  <link rel="stylesheet" href="css/report.css" />
+</head>
+
+<body>
+  <div class="app-container">
+
+    <nav class="page-topbar" aria-label="页面工具栏">
+      <a href="index.html" class="back-link">‹ 返回记录</a>
+      <div class="header-tools">
+        <button type="button" class="theme-toggle-btn" data-theme-toggle data-theme-mode="system" title="当前：跟随系统（点击切换为深色模式）" aria-label="当前：跟随系统（点击切换为深色模式）"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
+      </div>
+    </nav>
+
+    <header class="report-header">
+      <h1><img src="ui/report.svg" width="26" height="26" alt="" /> 统计报告</h1>
+      <p class="subtitle">数据驱动，量化生活</p>
+    </header>
+
+    <!-- 自定义时段 -->
+    <div class="range-picker">
+      <div class="range-inputs" id="range-inputs">
+        <input type="text" id="range-start" readonly title="选择开始日期" aria-label="开始日期" />
+        <span class="range-sep" aria-hidden="true">—</span>
+        <input type="text" id="range-end" readonly title="选择结束日期" aria-label="结束日期" />
+      </div>
+      <div class="range-presets" role="group" aria-label="时段预设">
+        <button type="button" class="preset-btn active" data-preset="1" aria-pressed="true">今天</button>
+        <button type="button" class="preset-btn" data-preset="7" aria-pressed="false">近7天</button>
+        <button type="button" class="preset-btn" data-preset="14" aria-pressed="false">近14天</button>
+        <button type="button" class="preset-btn" data-preset="30" aria-pressed="false">近30天</button>
+        <button type="button" class="preset-btn" data-preset="90" aria-pressed="false">近90天</button>
+        <button type="button" class="preset-btn" data-preset="180" aria-pressed="false">近半年</button>
+        <button type="button" class="preset-btn" data-preset="365" aria-pressed="false">近一年</button>
+        <button type="button" class="preset-btn" data-preset="all" aria-pressed="false">全部</button>
+      </div>
+
+      <!-- 精度 & 密度 -->
+      <div class="chart-controls">
+        <div class="ctrl-item">
+          <label class="ctrl-label" for="ctrl-precision">统计精度</label>
+          <div class="ctrl-input-wrap">
+            <button type="button" class="ctrl-step" id="precision-dec" aria-label="降低统计精度">−</button>
+            <input class="ctrl-num" id="ctrl-precision" type="number" value="1" min="1" max="30" />
+            <button type="button" class="ctrl-step" id="precision-inc" aria-label="提高统计精度">+</button>
+          </div>
+          <span class="ctrl-unit">天/点</span>
+        </div>
+        <div class="ctrl-divider" aria-hidden="true"></div>
+        <div class="ctrl-item">
+          <label class="ctrl-label" for="ctrl-density">统计密度</label>
+          <div class="ctrl-input-wrap">
+            <button type="button" class="ctrl-step" id="density-dec" aria-label="降低统计密度">−</button>
+            <input class="ctrl-num" id="ctrl-density" type="number" value="7" min="7" />
+            <button type="button" class="ctrl-step" id="density-inc" aria-label="提高统计密度">+</button>
+          </div>
+          <span class="ctrl-unit">点/页</span>
+        </div>
+        <div class="ctrl-divider" aria-hidden="true"></div>
+        <button type="button" class="ctrl-reset" id="ctrl-reset">重置</button>
+      </div>
+    </div>
+
+    <!-- 报告内容 -->
+    <main id="report-content"></main>
+
+  </div>
+  <!-- 图表浮动提示（纯视觉辅助，数值已在图表 aria-label 与图例中提供） -->
+  <div id="chart-tip" class="chart-tip" aria-hidden="true" hidden></div>
+  <script type="module" src="js/report-entry.js"></script>
+</body>
+
+</html>

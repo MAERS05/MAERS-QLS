@@ -1,0 +1,629 @@
+/* ==========================================================================
+   MAERS Schedule — 「进行中」计时与量化联动板块样式 (in-progress.css)
+   风格：纸墨手账 (Paper & Ink Tactile Stationery)
+   ========================================================================== */
+
+/* 视图显隐由 hidden 属性控制 */
+
+/* === 区块容器与头部 === */
+.ip-section {
+  margin-bottom: 0;
+}
+
+.ip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 9px;
+  border-bottom: 1.5px dashed var(--border);
+}
+
+.ip-title {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ip-title-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ip-title-icon {
+  flex: none;
+  display: block;
+}
+
+.ip-count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+}
+
+.ip-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ip-history-btn {
+  border: 1px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.ip-history-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.ip-history-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-dim);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+}
+
+/* === 任务卡片网格 === */
+.ip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  max-height: max(460px, calc(100dvh - 220px));
+  overflow-y: auto;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.ip-add-card {
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 16px;
+  background: var(--bg-card);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.ip-add-card:hover {
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.ip-add-card.is-empty {
+  grid-column: 1 / -1;
+  min-height: 116px;
+  flex-direction: row;
+}
+
+.ip-add-card-icon {
+  font-size: 1.55rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.ip-add-card-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ip-add-card.is-empty .ip-add-card-copy {
+  align-items: flex-start;
+}
+
+.ip-add-card-title {
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ip-add-card-hint {
+  font-size: 0.7rem;
+}
+
+/* === 进行中任务卡片 === */
+.ip-card {
+  --ip-color: #527cca;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-left: 5px solid var(--ip-color);
+  border-radius: var(--radius-sm);
+  padding: 15px 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow var(--transition);
+}
+
+.ip-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.ip-card.is-editable {
+  cursor: pointer;
+}
+
+.ip-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ip-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ip-card-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.ip-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.ip-tag-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+}
+
+/* 状态徽章 */
+.ip-status-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--border-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.ip-status-badge.running {
+  background: rgba(77, 136, 104, 0.14);
+  color: #4d8868;
+}
+
+.ip-status-badge.paused {
+  background: rgba(203, 138, 62, 0.15);
+  color: #cb8a3e;
+}
+
+.ip-status-badge.completed {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.ip-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: ip-pulse 1.4s infinite ease-in-out;
+}
+
+@keyframes ip-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+
+/* 计时器读数显示 */
+.ip-timer-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 10px 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.ip-timer-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.4;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.ip-timer-digits {
+  flex: none;
+  margin-left: 10px;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: 0.03em;
+}
+
+/* 分段记录列表 */
+.ip-segments {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--bg-input);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xs);
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.ip-seg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--text-sub);
+}
+
+.ip-seg-idx {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.ip-seg-range {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.ip-seg-dur {
+  color: var(--text-dim);
+  font-size: 0.68rem;
+}
+
+/* 操作按钮栏 */
+.ip-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.ip-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--border-ink);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ip-btn-pause {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.ip-btn-pause:hover {
+  background: var(--bg-input-focus);
+}
+
+.ip-btn-resume {
+  background: var(--bg-input);
+  color: var(--accent);
+}
+
+.ip-btn-resume:hover {
+  background: var(--accent-subtle);
+}
+
+.ip-btn-finish {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.ip-btn-finish:hover {
+  background: var(--accent-hover);
+}
+
+.ip-btn-abandon {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.ip-btn-abandon:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(196, 85, 77, 0.08);
+}
+
+/* 已结束卡片：心情展示与弹出选择器 */
+.ip-mood-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.ip-btn-mood {
+  flex: 0 0 auto;
+  min-width: 46px;
+  padding: 7px 10px;
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.ip-btn-mood.has-mood {
+  padding: 6px 10px;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .ip-btn-mood:hover {
+    border-color: var(--border-ink);
+    color: var(--text-main);
+    background: var(--bg-input);
+  }
+}
+
+.ip-mood-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: none;
+  gap: 4px;
+  padding: 5px 6px;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.ip-mood-wrap.open .ip-mood-menu {
+  display: flex;
+}
+
+.ip-mood-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-sub);
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .ip-mood-opt:hover {
+    background: var(--bg-input);
+    color: var(--text-main);
+  }
+}
+
+.ip-mood-opt.active {
+  background: var(--accent-subtle);
+  border-color: var(--border-ink);
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.ip-mood-opt-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ip-mood-opt-label {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  line-height: 1.1;
+}
+
+/* === 结算与时间调整弹窗内的分段编辑器 === */
+.ip-settle-seg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 2px;
+  margin-bottom: 8px;
+}
+
+.ip-settle-seg-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.ip-settle-seg-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  min-width: 44px;
+}
+
+.ip-settle-time-input {
+  width: 72px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-ink);
+  border-radius: 4px;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+.ip-settle-time-input:hover {
+  border-color: var(--accent);
+}
+
+.ip-settle-seg-sep {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.ip-settle-seg-dur {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.ip-settle-seg-del {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.ip-settle-seg-del:hover {
+  color: var(--danger);
+}
+
+.ip-settle-add-seg {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed var(--border-ink);
+  border-radius: 6px;
+  color: var(--text-sub);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.ip-settle-add-seg:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.ip-settle-total-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--accent-subtle);
+  border: 1.5px solid var(--border-ink);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.ip-settle-total-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.ip-settle-total-hint {
+  font-size: 0.68rem;
+  color: var(--text-sub);
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+
+.ip-settle-total-input {
+  width: 92px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: 6px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 6px 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .ip-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

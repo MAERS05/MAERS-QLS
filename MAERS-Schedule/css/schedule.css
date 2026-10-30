@@ -1,0 +1,828 @@
+/* ==========================================================================
+   MAERS Schedule — 主框架与三层时间轴样式 (schedule.css)
+   依赖：../common/css/base.css, ../common/css/components.css
+   ========================================================================== */
+
+/* Schedule 布局容器尺寸微调 */
+html {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.app-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 24px 24px;
+}
+
+/* === Header（基础标题与荧光笔见 common/css/base.css，此处仅定义双端对齐与字号微调） === */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  font-size: clamp(1.35rem, 1.25rem + 0.6vw, 1.55rem);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* === View Tabs (手账索引标签栏) === */
+.view-tabs {
+  display: flex;
+  gap: 3px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.14);
+}
+
+.view-tab {
+  padding: 5px 14px;
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-tab[aria-selected="true"] {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
+  border-color: var(--border-ink);
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .view-tab:hover:not([aria-selected="true"]) {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border-color: var(--border);
+  }
+}
+
+/* === 通用卡片页眉布局 === */
+.quadrant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1.5px dashed var(--border);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.quadrant-header-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.goal-dates {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.68rem;
+}
+
+/* === Task Item (手账牛皮纸便签条) === */
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-left: 3.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.task-item[data-q="do"]        { border-left-color: var(--q-do); }
+.task-item[data-q="delegate"]  { border-left-color: var(--q-delegate); }
+.task-item[data-q="plan"]      { border-left-color: var(--q-plan); }
+.task-item[data-q="eliminate"] { border-left-color: var(--q-eliminate); }
+
+.task-item:hover {
+  border-color: var(--border-ink);
+  background: var(--bg-input-focus);
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.12);
+}
+
+.task-item[data-q="do"]:hover        { border-left-color: var(--q-do); }
+.task-item[data-q="delegate"]:hover  { border-left-color: var(--q-delegate); }
+.task-item[data-q="plan"]:hover      { border-left-color: var(--q-plan); }
+.task-item[data-q="eliminate"]:hover { border-left-color: var(--q-eliminate); }
+
+.task-item.done {
+  opacity: 0.55;
+}
+
+.task-item.done .task-title {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+/* 拖拽排序：跟随指针的实心纸卡（不透明）与完全隐藏的空白占位槽（无提前预览），手势保持一致的点击 pointer */
+.touch-drag-ghost,
+.task-item.touch-drag-ghost,
+.goal-card.touch-drag-ghost,
+.vision-card.touch-drag-ghost {
+  position: fixed;
+  z-index: 9999;
+  margin: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+  opacity: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(26, 25, 23, 0.18), 3px 3px 0px rgba(26, 25, 23, 0.14);
+  will-change: translate;
+  transition: box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.touch-drag-ghost.is-settling {
+  box-shadow: var(--shadow-card);
+}
+
+.task-item.dragging,
+.goal-card.dragging,
+.vision-card.dragging,
+.task-item.is-touch-source,
+.goal-card.is-touch-source,
+.vision-card.is-touch-source {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 长按与按下时统一保持一致的点击光标 */
+.task-item:active,
+.goal-card:active,
+.vision-card:active {
+  cursor: pointer;
+}
+
+/* 拖拽进行中全局保持一致的点击光标 */
+body.is-touch-dragging,
+body.is-touch-dragging * {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .touch-drag-ghost {
+    transition: none;
+  }
+}
+
+.task-check {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border-radius: 2px;
+  border: 1.5px solid var(--border-ink);
+  background: var(--bg-card);
+  font: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-check:hover {
+  background: var(--accent-subtle);
+}
+
+.task-check.checked {
+  background: var(--accent);
+  border-color: var(--border-ink);
+}
+
+.task-check.checked::after {
+  content: '✓';
+  color: var(--accent-fg);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  min-width: 0;
+}
+
+.task-title {
+  font-size: 0.82rem;
+  color: var(--text-main);
+  font-weight: 500;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.task-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.task-q-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  border: 1px solid var(--border-ink);
+  flex-shrink: 0;
+  margin-top: 0.42em;
+}
+
+.task-q-indicator[data-q="do"]        { background: var(--q-do); }
+.task-q-indicator[data-q="delegate"]  { background: var(--q-delegate); }
+.task-q-indicator[data-q="plan"]      { background: var(--q-plan); }
+.task-q-indicator[data-q="eliminate"] { background: var(--q-eliminate); }
+
+.task-start-date {
+  color: var(--text-sub);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.task-deadline {
+  color: var(--warning);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.task-deadline.overdue {
+  color: var(--danger);
+}
+
+.task-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.task-item:hover .task-actions,
+.task-item:focus-within .task-actions {
+  opacity: 1;
+}
+
+.task-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px 5px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  transition: all var(--transition);
+  line-height: 1;
+}
+
+.task-action-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-input);
+}
+
+.task-action-btn.del {
+  font-size: 1.1rem;
+  padding: 1px 5px;
+}
+
+.task-action-btn.del:hover {
+  color: var(--danger);
+  background: rgba(196, 85, 77, 0.12);
+}
+
+/* === Timeline View & Sort Dropdown === */
+/* 视图显隐由 hidden 属性控制 */
+
+.timeline-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.timeline-sort-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.timeline-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.14);
+  transition: all var(--transition);
+  line-height: 1.2;
+}
+
+.timeline-sort-btn:hover,
+.timeline-sort-dropdown.open .timeline-sort-btn {
+  background: var(--bg-input);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-ink);
+}
+
+.sort-btn-icon {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sort-btn-caret {
+  font-size: 0.72rem;
+  color: var(--text-sub);
+  transition: transform var(--transition);
+}
+
+.timeline-sort-dropdown.open .sort-btn-caret {
+  transform: rotate(180deg);
+}
+
+.timeline-sort-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 280px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card-hover);
+  padding: 6px;
+  z-index: 60;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.timeline-sort-dropdown.open .timeline-sort-menu {
+  display: flex;
+}
+
+.sort-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition);
+}
+
+.sort-menu-item:hover {
+  background: var(--bg-input);
+  border-color: var(--border);
+}
+
+.sort-menu-item.active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--border-ink);
+  font-weight: 700;
+}
+
+.sort-item-check {
+  opacity: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.sort-menu-item.active .sort-item-check {
+  opacity: 1;
+}
+
+.sort-menu-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sort-sub-options {
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 4px 2px 12px;
+  padding: 6px 8px 7px;
+  background: var(--bg-input);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+}
+
+.sort-sub-options.is-disabled {
+  opacity: 0.48;
+  filter: grayscale(0.75);
+  border-left-color: var(--border);
+}
+
+.sort-sub-label {
+  flex-basis: 100%;
+  font-size: 0.68rem;
+  color: var(--text-sub);
+  white-space: nowrap;
+  margin: 0 0 1px;
+}
+
+.sort-sub-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.sort-sub-btn:hover {
+  color: var(--text-main);
+  border-color: var(--border-ink);
+}
+
+.sort-sub-btn:disabled {
+  cursor: not-allowed;
+}
+
+.sort-sub-btn.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--border-ink);
+}
+
+.timeline-section {
+  margin-bottom: 22px;
+}
+
+.timeline-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px dashed var(--border);
+}
+
+.timeline-title {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1.02rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-icon {
+  font-size: 1.1rem;
+}
+
+.timeline-count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+}
+
+.timeline-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  overflow-anchor: none;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.timeline-list > * {
+  flex-shrink: 0;
+}
+
+/* 三层任务列表内部滚动高度（约：短期 3 项 / 中期 2 项 / 长期 3 项） */
+#short-list {
+  max-height: 220px;
+}
+
+#mid-list {
+  max-height: 410px;
+}
+
+#long-list {
+  max-height: 360px;
+}
+
+.timeline-inline-add {
+  width: 100%;
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--bg-card);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-sub);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.timeline-inline-add:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.timeline-inline-add.is-empty {
+  min-height: 104px;
+  color: var(--text-dim);
+}
+
+.timeline-inline-add-icon {
+  flex: 0 0 auto;
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.timeline-inline-add-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.timeline-inline-add-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.timeline-inline-add-hint {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+/* === Mid-tier goal card (手账目标纸卡) === */
+.goal-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-left: 4px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-card);
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.goal-card[data-q="do"]        { border-left-color: var(--q-do); }
+.goal-card[data-q="delegate"]  { border-left-color: var(--q-delegate); }
+.goal-card[data-q="plan"]      { border-left-color: var(--q-plan); }
+.goal-card[data-q="eliminate"] { border-left-color: var(--q-eliminate); }
+
+.goal-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.goal-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.goal-progress-bar {
+  height: 7px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-ink);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  transition: width 0.4s ease;
+  background: var(--accent);
+}
+
+.goal-progress-text {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-sub);
+}
+
+.goal-subtasks {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.goal-subtask {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  font: inherit;
+  font-size: 0.78rem;
+  text-align: left;
+  color: var(--text-sub);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.goal-subtask:hover {
+  color: var(--text-main);
+}
+
+.goal-subtask.done {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+/* === Long-tier vision card (手账愿景纸卡) === */
+.vision-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-left: 5px solid var(--kraft);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.vision-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.vision-title {
+  font-family: var(--font);
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.vision-desc {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* === 桌面端：中期/长期卡片的操作按钮与拖拽手柄默认透明，hover/focus 后显示（触控端保持常显） === */
+@media (hover: hover) and (pointer: fine) {
+  .goal-card .quadrant-header-right .task-action-btn,
+  .goal-card .quadrant-header-right .drag-handle,
+  .vision-card .quadrant-header-right .task-action-btn,
+  .vision-card .quadrant-header-right .drag-handle {
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+
+  .goal-card:hover .quadrant-header-right .task-action-btn,
+  .goal-card:hover .quadrant-header-right .drag-handle,
+  .goal-card:focus-within .quadrant-header-right .task-action-btn,
+  .goal-card:focus-within .quadrant-header-right .drag-handle,
+  .vision-card:hover .quadrant-header-right .task-action-btn,
+  .vision-card:hover .quadrant-header-right .drag-handle,
+  .vision-card:focus-within .quadrant-header-right .task-action-btn,
+  .vision-card:focus-within .quadrant-header-right .drag-handle {
+    opacity: 1;
+  }
+}
+
+/* === 拖拽排序手柄（三横杠图标） === */
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--text-dim);
+  cursor: grab;
+  border-radius: 3px;
+  transition: color var(--transition), background var(--transition);
+  flex-shrink: 0;
+  font-size: 0;
+  line-height: 1;
+  touch-action: none; /* 彻底杜绝触控原生滚动抢占，保障手柄拖拽零竞态 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.drag-handle:hover {
+  color: var(--text-main);
+  background: var(--bg-input);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* 三横杠用三条平行短线绘制 */
+.drag-handle-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+  width: 12px;
+}
+
+.drag-handle-bar span {
+  display: block;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+}
+

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAERS QLS — 统一量化系统</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="description" content="MAERS QLS：纸感手账式时间管理与个人生活量化记事本入口。" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f3efe6" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MAERS QLS" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="common/ui/app-icon.svg" />
+  <link rel="apple-touch-icon" href="common/ui/icon-192.png" />
+  <script src="common/js/theme-boot.js"></script>
+  <link rel="stylesheet" href="common/css/base.css" />
+  <link rel="stylesheet" href="common/css/components.css" />
+  <link rel="stylesheet" href="common/css/portal.css" />
+</head>
+<body class="portal-body">
+
+  <div class="notebook-sheet">
+    <div class="sheet-topbar">
+      <div class="sheet-kicker">MAERS NOTEBOOK // PERSONAL QUANTIFIED LOGBOOK</div>
+      <div class="header-actions">
+        <button type="button" class="header-icon-btn" id="project-guide-btn" title="项目使用说明" aria-label="项目使用说明" aria-haspopup="dialog" aria-controls="project-guide-dialog">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+        </button>
+        <button type="button" class="theme-toggle-btn" data-theme-toggle data-theme-mode="system" title="当前：跟随系统（点击切换为深色模式）" aria-label="当前：跟随系统（点击切换为深色模式）"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
+        <button type="button" id="qls-import-btn" title="导入全局数据" aria-label="导入全局数据" class="header-icon-btn">
+          <img src="common/ui/import.svg" width="17" height="17" alt="" class="icon-mono">
+        </button>
+        <button type="button" id="qls-export-btn" title="导出全局备份" aria-label="导出全局备份" class="header-icon-btn">
+          <img src="common/ui/export.svg" width="17" height="17" alt="" class="icon-mono">
+        </button>
+      </div>
+    </div>
+
+    <div class="header-container">
+      <h1 class="portal-title">MAERS <span>QLS</span></h1>
+      <p class="subtitle">纸感手账式时间管理与个人生活量化记事本 — 记录规划、留存过程痕迹。</p>
+      <div class="backup-status" id="backup-status">上次导出备份: 从未</div>
+    </div>
+
+    <main class="launcher-grid">
+      <!-- Schedule Portal -->
+      <div class="pad-stage">
+        <div class="launcher-card-shell">
+          <a href="MAERS-Schedule/index.html" class="launcher-card" id="link-sch">
+            <div class="note-tag">VOL. 01 · PLANNER</div>
+            <div class="note-lines"><span></span><span></span></div>
+            <div class="card-header-row">
+              <div class="card-icon"><img src="MAERS-Schedule/ui/logo.svg" width="22" height="22" alt="Schedule"></div>
+              <div class="card-title">Schedule</div>
+            </div>
+            <div class="card-desc">方格日程规划本、多维排序时间轴、进行中专注计时手账</div>
+          </a>
+          <div class="entry-settings" data-entry-app="sch">
+            <button type="button" class="entry-settings-btn" data-entry-toggle="sch" title="设置默认入口" aria-label="设置 Schedule 默认入口" aria-expanded="false">
+              <img src="common/ui/settings.svg" width="15" height="15" alt="" class="icon-mono">
+            </button>
+            <div class="entry-settings-popover" role="group" aria-label="Schedule 默认入口" hidden>
+              <div class="entry-settings-title">默认入口：</div>
+              <div class="entry-settings-grid">
+                <button type="button" class="entry-opt active" data-entry-app="sch" data-entry-val="timeblock">规划表</button>
+                <button type="button" class="entry-opt" data-entry-app="sch" data-entry-val="timeline">时间轴</button>
+                <button type="button" class="entry-opt" data-entry-app="sch" data-entry-val="inprogress">进行中</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QuantiLife Portal -->
+      <div class="pad-stage">
+        <div class="launcher-card-shell">
+          <a href="MAERS-QuantiLife/index.html" class="launcher-card" id="link-ql">
+            <div class="note-tag">VOL. 02 · DAILY LOG</div>
+            <div class="note-lines"><span></span><span></span></div>
+            <div class="card-header-row">
+              <div class="card-icon"><img src="MAERS-QuantiLife/ui/logo.svg" width="22" height="22" alt="QuantiLife"></div>
+              <div class="card-title">QuantiLife</div>
+            </div>
+            <div class="card-desc">每日步数睡眠记录单、饮食热量台账、活动与心情手札</div>
+          </a>
+          <div class="entry-settings" data-entry-app="ql">
+            <button type="button" class="entry-settings-btn" data-entry-toggle="ql" title="设置默认入口" aria-label="设置 QuantiLife 默认入口" aria-expanded="false">
+              <img src="common/ui/settings.svg" width="15" height="15" alt="" class="icon-mono">
+            </button>
+            <div class="entry-settings-popover" role="group" aria-label="QuantiLife 默认入口" hidden>
+              <div class="entry-settings-title">默认入口：</div>
+              <div class="entry-settings-grid">
+                <button type="button" class="entry-opt active" data-entry-app="ql" data-entry-val="index">量化记录</button>
+                <button type="button" class="entry-opt" data-entry-app="ql" data-entry-val="report">报告</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <dialog class="project-guide-dialog" id="project-guide-dialog" aria-labelledby="project-guide-title">
+    <article class="project-guide-panel">
+      <header class="project-guide-header">
+        <div>
+          <p class="project-guide-eyebrow">MAERS QLS // USER GUIDE</p>
+          <h2 id="project-guide-title">项目使用说明</h2>
+        </div>
+        <button type="button" class="project-guide-close" data-guide-close aria-label="关闭使用说明">×</button>
+      </header>
+
+      <section class="project-guide-section project-guide-notice" aria-label="重要使用提示">
+        <p><strong>重要：</strong>请仅在一个标签页中编辑数据。修改并保存后，请刷新其他已打开的标签页，再继续操作,避免数据出现问题。</p>
+      </section>
+
+      <section class="project-guide-section">
+        <h3>项目简介</h3>
+        <p>MAERS QLS 是个人时间规划与生活记录工具，由 Schedule 和 QuantiLife 两部分组成。可以分别使用，也可以通过活动类别和计时记录让计划与实际回顾相互衔接。</p>
+      </section>
+
+      <section class="project-guide-section">
+        <h3>Schedule｜时间规划</h3>
+        <ul>
+          <li><strong>规划表：</strong>按日期和时间安排活动，可用分类颜色区分活动类型，长按显示详情；点今跳回今天，点图层按钮显示被更长时间块覆盖的块。可自选时段查看。</li>
+          <li><strong>时间轴：</strong>按时间顺序浏览和整理安排。长按显示备注。</li>
+          <li><strong>进行中：</strong>开始专注计时，完成后保留实际投入的时间记录，可调整时间或标记心情。</li>
+          <li><strong>期望：</strong>记录各类别的目标时长，用于安排与回顾。</li>
+        </ul>
+      </section>
+
+      <section class="project-guide-section">
+        <h3>QuantiLife｜生活量化</h3>
+        <ul>
+          <li>记录每日步数、睡眠、饮食与热量、活动和心情等生活数据。</li>
+          <li>在统计/报告页面查看记录汇总，帮助回顾生活节奏。</li>
+        </ul>
+      </section>
+
+      <section class="project-guide-section">
+        <h3>数据与设置</h3>
+        <ul>
+          <li><strong>联动：</strong>Schedule 完成的计时活动可同步到 QuantiLife；规划表中的期望时长也可同步到 QuantiLife 的期望设定。</li>
+          <li><strong>备份：</strong>主页的下箭头导出全项目备份；上箭头导入。建议定期导出并妥善保存文件。</li>
+          <li>
+            <strong>主题：</strong>顶部按钮支持三种模式循环切换：
+            <ul>
+              <li><strong>跟随系统（屏幕图标）</li>
+              <li><strong>深色模式（月亮图标）</li>
+              <li><strong>浅色模式（太阳图标）</li>
+            </ul>
+          </li>
+          <li><strong>本地数据：</strong>记录保存在当前浏览器中；清理浏览器数据或更换设备前，请先导出备份。</li>
+        </ul>
+      </section>
+
+      <footer class="project-guide-footer">
+        <button type="button" class="project-guide-done" data-guide-close>知道了</button>
+      </footer>
+    </article>
+  </dialog>
+
+  <input type="file" id="qls-import-file" accept=".json,application/json" hidden />
+  <div class="toast" id="toast" popover="manual" role="status" aria-live="polite"></div>
+
+  <script type="module" src="common/js/portal-entry.js"></script>
+</body>
+</html>

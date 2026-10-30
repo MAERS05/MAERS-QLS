@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="qls-kraft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c49e6c"/>
+      <stop offset="100%" stop-color="#8c683a"/>
+    </linearGradient>
+  </defs>
+  <!-- 纸感圆角底板 -->
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="#f3efe6" stroke="#43392f" stroke-width="16"/>
+  <!-- 错位牛皮纸色块装饰 -->
+  <rect x="76" y="76" width="160" height="128" rx="16" fill="#e2d5be"/>
+  <!-- 内页手账白纸卡 -->
+  <rect x="96" y="96" width="320" height="320" rx="24" fill="#fbf9f5" stroke="#43392f" stroke-width="14"/>
+  <!-- 顶部手绘标题横线 -->
+  <rect x="136" y="142" width="168" height="14" rx="7" fill="#8c683a"/>
+  <rect x="136" y="170" width="112" height="10" rx="5" fill="#d3c4ab"/>
+  <!-- 量化三柱 + 规划折角组合标识 -->
+  <rect x="142" y="286" width="44" height="82" rx="10" fill="url(#qls-kraft)"/>
+  <rect x="206" y="214" width="44" height="154" rx="10" fill="url(#qls-kraft)"/>
+  <rect x="270" y="250" width="44" height="118" rx="10" fill="url(#qls-kraft)"/>
+  <path d="M366 218 L366 364 L328 364" stroke="#43392f" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="description" content="MAERS Schedule：周历时间块规划、三层时间轴目标管理与进行中专注计时。" />
+  <title>MAERS Schedule — 时间规划</title>
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f3efe6" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MAERS QLS" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="../common/ui/app-icon.svg" />
+  <link rel="apple-touch-icon" href="../common/ui/icon-192.png" />
+  <script src="../common/js/theme-boot.js"></script>
+  <link rel="stylesheet" href="../common/css/base.css" />
+  <link rel="stylesheet" href="../common/css/components.css" />
+  <link rel="stylesheet" href="css/schedule.css" />
+  <link rel="stylesheet" href="css/timeblock.css" />
+  <link rel="stylesheet" href="css/in-progress.css" />
+  <link rel="stylesheet" href="css/modals.css" />
+  <link rel="stylesheet" href="css/mobile.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- 顶部返航与工具栏 -->
+    <nav class="page-topbar" aria-label="页面工具栏">
+      <a href="../index.html" class="back-link">‹ 返回主面板</a>
+      <div class="header-tools" id="header-tools">
+        <button type="button" class="header-icon-btn" data-theme-toggle data-theme-mode="system" title="当前：跟随系统（点击切换为深色模式）" aria-label="当前：跟随系统（点击切换为深色模式）"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
+        <button type="button" class="header-icon-btn" id="ms-import" title="导入数据" aria-label="导入数据">
+          <img src="../common/ui/import.svg" width="16" height="16" class="icon-mono" alt="" />
+        </button>
+        <button type="button" class="header-icon-btn" id="ms-export" title="导出数据" aria-label="导出数据">
+          <img src="../common/ui/export.svg" width="16" height="16" class="icon-mono" alt="" />
+        </button>
+        <input type="file" id="ms-import-file" accept=".json,application/json" hidden />
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="app-header">
+      <h1>
+        <img src="ui/logo.svg" width="26" height="26" class="app-title-icon" alt="" />
+        MAERS <span class="title-sch">Schedule</span>
+      </h1>
+      <div class="header-actions">
+        <div class="view-tabs" role="tablist" aria-label="视图切换">
+          <button type="button" class="view-tab" role="tab" id="tab-timeblock" data-view="timeblock" aria-controls="view-timeblock" aria-selected="false" tabindex="-1">规划表</button>
+          <button type="button" class="view-tab" role="tab" id="tab-timeline" data-view="timeline" aria-controls="view-timeline" aria-selected="false" tabindex="-1">时间轴</button>
+          <button type="button" class="view-tab" role="tab" id="tab-inprogress" data-view="inprogress" aria-controls="view-inprogress" aria-selected="false" tabindex="-1">进行中</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ========== Timeline View ========== -->
+      <section id="view-timeline" role="tabpanel" aria-labelledby="tab-timeline" hidden>
+        <div class="timeline-toolbar">
+          <div class="timeline-sort-dropdown" id="timeline-sort-dropdown">
+            <button type="button" class="timeline-sort-btn" id="timeline-sort-btn" title="切换时间轴排序方式"
+              aria-haspopup="true" aria-expanded="false" aria-controls="timeline-sort-menu">
+              <span class="sort-btn-icon" aria-hidden="true">⇅</span>
+              <span id="timeline-sort-label">排序：手动拖拽</span>
+              <span class="sort-btn-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="timeline-sort-menu" id="timeline-sort-menu" role="group" aria-label="排序方式">
+              <button type="button" class="sort-menu-item active" data-sort-mode="manual" aria-pressed="true">
+                <span>手动拖拽排序</span>
+                <span class="sort-item-check" aria-hidden="true">✓</span>
+              </button>
+              <button type="button" class="sort-menu-item" data-sort-mode="startDate" aria-pressed="false">
+                <span>按开始时间（早→晚）</span>
+                <span class="sort-item-check" aria-hidden="true">✓</span>
+              </button>
+              <button type="button" class="sort-menu-item" data-sort-mode="deadline" aria-pressed="false">
+                <span>按截止时间（早→晚）</span>
+                <span class="sort-item-check" aria-hidden="true">✓</span>
+              </button>
+              <div class="sort-menu-group">
+                <button type="button" class="sort-menu-item" data-sort-mode="quadrant" aria-pressed="false">
+                  <span>按重要紧急程度排序</span>
+                  <span class="sort-item-check" aria-hidden="true">✓</span>
+                </button>
+                <div class="sort-sub-options" id="timeline-sort-sub" role="group" aria-label="同等级内二级排序">
+                  <span class="sort-sub-label">（可选）</span>
+                  <button type="button" class="sort-sub-btn active" data-sub-sort="none" aria-pressed="true">无</button>
+                  <button type="button" class="sort-sub-btn" data-sub-sort="startDate" aria-pressed="false">按开始时间</button>
+                  <button type="button" class="sort-sub-btn" data-sub-sort="deadline" aria-pressed="false">按截止时间</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="timeline-section" aria-labelledby="short-heading">
+          <div class="timeline-header">
+            <h2 class="timeline-title" id="short-heading">
+              <img src="ui/short.svg" width="20" height="20" class="timeline-icon" alt="" /> 短期待办
+              <span class="timeline-count" id="short-count">0</span>
+            </h2>
+          </div>
+          <div class="timeline-list" id="short-list" data-tier="short"></div>
+        </section>
+
+        <section class="timeline-section" aria-labelledby="mid-heading">
+          <div class="timeline-header">
+            <h2 class="timeline-title" id="mid-heading">
+              <img src="ui/mid.svg" width="22" height="22" class="timeline-icon" alt="" /> 中期目标
+              <span class="timeline-count" id="mid-count">0</span>
+            </h2>
+          </div>
+          <div class="timeline-list" id="mid-list" data-tier="mid"></div>
+        </section>
+
+        <section class="timeline-section" aria-labelledby="long-heading">
+          <div class="timeline-header">
+            <h2 class="timeline-title" id="long-heading">
+              <img src="ui/long.svg" width="20" height="20" class="timeline-icon" alt="" /> 长期愿景
+              <span class="timeline-count" id="long-count">0</span>
+            </h2>
+          </div>
+          <div class="timeline-list" id="long-list" data-tier="long"></div>
+        </section>
+        <div class="tb-detail-tip" id="timeline-detail-tip" role="tooltip" hidden></div>
+      </section>
+
+      <!-- ========== Time Block View ========== -->
+      <section id="view-timeblock" role="tabpanel" aria-labelledby="tab-timeblock" hidden></section>
+
+      <!-- ========== In-Progress View (进行中) ========== -->
+      <section id="view-inprogress" role="tabpanel" aria-labelledby="tab-inprogress" hidden></section>
+    </main>
+  </div>
+
+  <!-- ========== Task Modal ========== -->
+  <dialog class="modal-dialog" id="task-modal" aria-labelledby="modal-title">
+    <div class="modal">
+      <h2 class="modal-title" id="modal-title">新任务</h2>
+
+      <div class="modal-field">
+        <label class="modal-label" for="modal-task-title">任务名称</label>
+        <input class="modal-input" id="modal-task-title" placeholder="描述你要做的事…" autocomplete="off" />
+      </div>
+
+      <div class="modal-field" id="field-quadrant">
+        <span class="modal-label" id="modal-quadrant-label">重要紧急程度</span>
+        <div class="quadrant-selector" id="modal-quadrant" role="radiogroup" aria-labelledby="modal-quadrant-label">
+          <button type="button" class="q-option selected" data-q="do" role="radio" aria-checked="true"><span class="q-option-dot" aria-hidden="true"></span>重要紧急</button>
+          <button type="button" class="q-option" data-q="delegate" role="radio" aria-checked="false" tabindex="-1"><span class="q-option-dot" aria-hidden="true"></span>不重要紧急</button>
+          <button type="button" class="q-option" data-q="plan" role="radio" aria-checked="false" tabindex="-1"><span class="q-option-dot" aria-hidden="true"></span>重要不紧急</button>
+          <button type="button" class="q-option" data-q="eliminate" role="radio" aria-checked="false" tabindex="-1"><span class="q-option-dot" aria-hidden="true"></span>不重要不紧急</button>
+        </div>
+      </div>
+
+      <div class="modal-field modal-field-row">
+        <div class="modal-field-col">
+          <label class="modal-label" for="modal-start-date">开始日期（可选）</label>
+          <input type="text" class="modal-input wp-trigger" id="modal-start-date" placeholder="选择日期…" readonly />
+        </div>
+        <div class="modal-field-col">
+          <label class="modal-label" for="modal-deadline">截止日期（可选）</label>
+          <input type="text" class="modal-input wp-trigger" id="modal-deadline" placeholder="选择日期…" readonly />
+        </div>
+      </div>
+
+      <div class="modal-field" id="field-subtasks">
+        <label class="modal-label" for="modal-subtasks">子任务（每行一个，中期目标适用）</label>
+        <textarea class="modal-input" id="modal-subtasks" rows="3" placeholder="文献综述&#10;数据分析&#10;撰写初稿"></textarea>
+      </div>
+
+      <div class="modal-field">
+        <label class="modal-label" for="modal-notes">备注</label>
+        <textarea class="modal-input" id="modal-notes" rows="2" placeholder="补充说明…"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-del" id="modal-delete" hidden>删除</button>
+        <div class="modal-spacer"></div>
+        <button type="button" class="modal-btn modal-btn-cancel" id="modal-cancel">取消</button>
+        <button type="button" class="modal-btn modal-btn-save" id="modal-save">保存</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========== Goal Modal ========== -->
+  <dialog class="modal-dialog" id="goal-modal" aria-labelledby="goal-modal-title">
+    <div class="modal">
+      <h2 class="modal-title" id="goal-modal-title">长期愿景</h2>
+      <div class="modal-field">
+        <label class="modal-label" for="goal-title">目标</label>
+        <input class="modal-input" id="goal-title" placeholder="你的长期目标…" autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="goal-notes">描述</label>
+        <textarea class="modal-input" id="goal-notes" rows="3" placeholder="为什么重要…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" id="goal-cancel">取消</button>
+        <button type="button" class="modal-btn modal-btn-save" id="goal-save">保存</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========== Time Block Modal (纯排程与期望列) ========== -->
+  <dialog class="modal-dialog" id="tb-modal" aria-labelledby="tb-modal-title">
+    <div class="tb-modal">
+      <div class="tb-modal-head">
+        <h2 class="modal-title" id="tb-modal-title">添加时间块</h2>
+        <div class="tb-step-settings" id="tb-step-settings">
+          <button type="button" class="tb-step-btn" id="tb-step-toggle" title="设置时间精度" aria-label="设置时间精度" aria-expanded="false">
+            <img src="../common/ui/settings.svg" width="15" height="15" alt="" class="icon-mono" />
+          </button>
+          <div class="tb-step-popover" id="tb-step-popover" role="group" aria-label="时间精度（分钟）" hidden>
+            <div class="tb-step-title">时间精度/min</div>
+            <div class="tb-step-grid">
+              <button type="button" class="tb-step-opt" data-step="1">1</button>
+              <button type="button" class="tb-step-opt" data-step="2">2</button>
+              <button type="button" class="tb-step-opt" data-step="3">3</button>
+              <button type="button" class="tb-step-opt" data-step="4">4</button>
+              <button type="button" class="tb-step-opt active" data-step="5">5</button>
+              <button type="button" class="tb-step-opt" data-step="6">6</button>
+              <button type="button" class="tb-step-opt" data-step="10">10</button>
+              <button type="button" class="tb-step-opt" data-step="12">12</button>
+              <button type="button" class="tb-step-opt" data-step="15">15</button>
+              <button type="button" class="tb-step-opt" data-step="20">20</button>
+              <button type="button" class="tb-step-opt" data-step="30">30</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="tb-block-label">名称</label>
+        <input class="modal-input" id="tb-block-label" placeholder="这个时段做什么…" autocomplete="off" />
+      </div>
+      <div class="modal-field modal-field-row">
+        <div class="modal-field-col-date">
+          <label class="modal-label" for="tb-block-date">日期</label>
+          <input type="text" class="modal-input modal-input-center wp-trigger" id="tb-block-date" readonly />
+          <input type="text" class="modal-input modal-input-ideal" id="tb-block-ideal-label" value="期望" readonly hidden aria-label="期望列" />
+        </div>
+        <div class="modal-field-col">
+          <label class="modal-label" for="tb-block-start">开始</label>
+          <input type="text" class="modal-input modal-input-center wp-trigger" id="tb-block-start" value="09:00" readonly />
+        </div>
+        <div class="modal-field-col">
+          <label class="modal-label" for="tb-block-end">结束</label>
+          <input type="text" class="modal-input modal-input-center wp-trigger" id="tb-block-end" value="10:00" readonly />
+        </div>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label" id="tb-block-colors-label">分类颜色</span>
+        <div class="tb-color-row" id="tb-block-colors" aria-labelledby="tb-block-colors-label"></div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="tb-block-notes">备注</label>
+        <textarea class="modal-input" id="tb-block-notes" rows="2" placeholder="补充说明…"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-del" id="tb-block-delete" hidden>删除</button>
+        <button type="button" class="modal-btn modal-btn-missed" id="tb-block-missed" aria-pressed="false" hidden>遗漏</button>
+        <div class="modal-spacer"></div>
+        <button type="button" class="modal-btn modal-btn-cancel" id="tb-block-cancel">取消</button>
+        <button type="button" class="modal-btn modal-btn-save" id="tb-block-save">保存</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========== Time Block Series Delete Modal (跨日/多日系列删除确认) ========== -->
+  <dialog class="modal-dialog" id="tb-del-modal" aria-labelledby="tb-del-modal-title">
+    <div class="tb-modal tb-del-modal">
+      <h2 class="modal-title" id="tb-del-modal-title">删除时间块</h2>
+      <p class="tb-del-desc" id="tb-del-desc" hidden>该块存在关联日期，请删除该块重新创建。</p>
+      <div class="tb-del-scopes" id="tb-del-scopes" role="radiogroup" aria-label="删除范围">
+        <button type="button" class="tb-del-scope-btn selected" data-del-scope="single" role="radio" aria-checked="true">仅当天</button>
+        <button type="button" class="tb-del-scope-btn" data-del-scope="following" role="radio" aria-checked="false">当天及以后</button>
+        <button type="button" class="tb-del-scope-btn" data-del-scope="all" role="radio" aria-checked="false">全部</button>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" id="tb-del-cancel">取消</button>
+        <div class="modal-spacer"></div>
+        <button type="button" class="modal-btn modal-btn-del" id="tb-del-confirm">删除</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========== In-Progress Add Modal (添加进行中任务并开始计时) ========== -->
+  <dialog class="modal-dialog" id="ip-add-modal" aria-labelledby="ip-add-modal-title">
+    <div class="tb-modal">
+      <h2 class="modal-title" id="ip-add-modal-title">添加进行中任务</h2>
+      <div class="modal-field">
+        <label class="modal-label" for="ip-task-title">任务名称</label>
+        <input class="modal-input" id="ip-task-title" placeholder="正在专注做什么…" autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <div class="tb-tag-picker-grid">
+          <div class="tb-tag-label-wrap">
+            <span class="modal-label" id="ip-color-label">分类 / 标签库</span>
+            <span id="ip-tag-error" class="tb-tag-error-tip" role="alert">请在搜索框输入新标签名称后添加</span>
+          </div>
+          <div class="tb-tag-search-group">
+            <div class="tb-tag-search-box">
+              <img src="ui/search.svg" width="12" height="12" class="icon-mono tb-tag-search-icon" alt="" />
+              <input type="text" id="ip-tag-search" class="tb-tag-search-input" placeholder="拼音/文字检索…" aria-label="检索标签" autocomplete="off" />
+            </div>
+            <button type="button" id="ip-tag-add-btn" class="tb-tag-add-btn" title="直接添加当前输入的标签并同步至 QL" aria-label="添加新标签">
+              <img src="ui/add.svg" width="10" height="10" class="icon-mono" alt="" />
+            </button>
+          </div>
+
+          <div class="tb-color-row" id="ip-color-swatches" aria-labelledby="ip-color-label"></div>
+          <div id="ip-tag-suggestions" class="tb-tag-suggestions" aria-label="标签建议"></div>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="ip-task-tags">联动量化标签（多个用逗号分隔）</label>
+        <input class="modal-input" id="ip-task-tags" placeholder="如：阅读, 专业课（选填）" autocomplete="off" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" id="ip-add-cancel">取消</button>
+        <button type="button" class="modal-btn modal-btn-save" id="ip-add-save">▶ 开始计时</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========== In-Progress Settle / Time Adjust Modal (结束结算与二次调时) ========== -->
+  <dialog class="modal-dialog" id="ip-settle-modal" aria-labelledby="ip-settle-modal-title">
+    <div class="modal">
+      <h2 class="modal-title" id="ip-settle-modal-title">调整计时与量化时间</h2>
+
+      <div class="modal-field modal-field-row">
+        <div class="modal-field-col">
+          <label class="modal-label" for="ip-settle-title">任务名称</label>
+          <input class="modal-input" id="ip-settle-title" autocomplete="off" />
+        </div>
+        <div class="modal-field-col">
+          <label class="modal-label" for="ip-settle-tags">联动量化标签</label>
+          <input class="modal-input" id="ip-settle-tags" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <span class="modal-label">分段起止时间（点击时间可修改，自动重算总时长）</span>
+        <div class="ip-settle-seg-list" id="ip-settle-segments"></div>
+        <button type="button" class="ip-settle-add-seg" id="ip-settle-add-seg">+ 新增时间段</button>
+      </div>
+
+      <div class="modal-field">
+        <div class="ip-settle-total-box">
+          <div>
+            <label class="ip-settle-total-label" for="ip-settle-total">最终计入量化总时长</label>
+            <span class="ip-settle-total-hint">按时:分输入累计时长，例如 30:00；修改分段时自动汇总</span>
+          </div>
+          <input type="text" class="ip-settle-total-input" id="ip-settle-total" value="00:30" inputmode="text" autocomplete="off" title="累计时长，格式 时:分，可超过24小时" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" id="ip-settle-cancel">取消</button>
+        <button type="button" class="modal-btn modal-btn-save" id="ip-settle-save">✓ 确认计入量化</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" popover="manual" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/entry.js"></script>
+</body>
+</html>

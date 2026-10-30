@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>MAERS QuantiLife — 生活量化</title>
+  <meta name="description" content="MAERS QuantiLife 个人生活量化系统 — 记录每日步数、睡眠、饮食、时间分配与心情" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f3efe6" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MAERS QLS" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="../common/ui/app-icon.svg" />
+  <link rel="apple-touch-icon" href="../common/ui/icon-192.png" />
+  <script src="../common/js/theme-boot.js"></script>
+  <link rel="stylesheet" href="../common/css/base.css" />
+  <link rel="stylesheet" href="../common/css/components.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/overlays.css" />
+  <link rel="stylesheet" href="css/mobile.css" />
+</head>
+
+<body>
+  <div class="app-container">
+
+    <!-- ====== 顶部导航栏 ====== -->
+    <nav class="page-topbar" aria-label="页面工具栏">
+      <a href="../index.html" class="back-link">‹ 返回主面板</a>
+      <div class="header-tools">
+        <button type="button" class="theme-toggle-btn" data-theme-toggle data-theme-mode="system" title="当前：跟随系统（点击切换为深色模式）" aria-label="当前：跟随系统（点击切换为深色模式）"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
+        <button type="button" class="theme-toggle-btn" id="import-btn" title="导入数据" aria-label="导入数据">
+          <img src="../common/ui/import.svg" width="16" height="16" class="icon-mono" alt="" />
+        </button>
+        <button type="button" class="theme-toggle-btn" id="export-btn" title="导出数据" aria-label="导出数据">
+          <img src="../common/ui/export.svg" width="16" height="16" class="icon-mono" alt="" />
+        </button>
+        <input type="file" id="import-file" accept=".json,application/json" hidden />
+      </div>
+    </nav>
+
+    <header class="app-header">
+      <h1>
+        <img src="ui/logo.svg" width="24" height="24" class="app-title-icon" alt="" />
+        MAERS <span class="title-ql">QuantiLife</span>
+      </h1>
+
+      <nav class="date-nav" aria-label="日期切换">
+        <button type="button" id="prev-day" aria-label="前一天">‹</button>
+        <button type="button" class="date-display" id="date-display" aria-haspopup="dialog" title="选择日期"></button>
+        <button type="button" id="next-day" aria-label="后一天">›</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ====== 基础指标：步数 / 睡眠 / 饮水 ====== -->
+      <section class="section" id="section-basics" aria-labelledby="basics-title">
+        <h2 class="section-title" id="basics-title"><span class="icon" aria-hidden="true"><img src="ui/overview.svg" width="20" height="20" alt="" /></span>基础指标</h2>
+        <div class="metric-row">
+          <div class="metric-card">
+            <div class="metric-icon"><img src="ui/walk.svg" width="28" height="28" alt="" /></div>
+            <label class="metric-label" for="input-steps">步数</label>
+            <input type="number" id="input-steps" placeholder="0" min="0" inputmode="numeric" />
+            <div class="metric-unit">步</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon"><img src="ui/sleep.svg" width="28" height="28" alt="" /></div>
+            <label class="metric-label" for="input-sleep">睡眠</label>
+            <input type="number" id="input-sleep" placeholder="0" min="0" max="24" step="0.5" inputmode="decimal" />
+            <div class="metric-unit">小时</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon"><img src="ui/water.svg" width="28" height="28" alt="" /></div>
+            <label class="metric-label" for="input-water">饮水</label>
+            <input type="number" id="input-water" placeholder="0" min="0" step="100" inputmode="numeric" />
+            <div class="metric-unit">毫升</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== 饮食记录 ====== -->
+      <section class="section" id="section-diet" aria-labelledby="diet-title">
+        <h2 class="section-title" id="diet-title"><span class="icon"><img src="ui/diet.svg" width="20" height="20" alt="" /></span>饮食记录</h2>
+        <div class="food-header" aria-hidden="true">
+          <span>食物名称</span>
+          <span>碳水 g</span>
+          <span>蛋白 g</span>
+          <span>脂肪 g</span>
+          <span>热量 kcal</span>
+          <span></span>
+        </div>
+        <div class="food-list" id="food-list"></div>
+        <button type="button" class="add-btn" id="add-food-btn">＋ 添加食物</button>
+        <div class="diet-summary" id="diet-summary" aria-label="饮食合计">
+          <div class="diet-summary-item sum-carb">
+            <div class="sum-value" id="sum-carb">0</div>
+            <div class="sum-label">碳水 g</div>
+          </div>
+          <div class="diet-summary-item sum-protein">
+            <div class="sum-value" id="sum-protein">0</div>
+            <div class="sum-label">蛋白质 g</div>
+          </div>
+          <div class="diet-summary-item sum-fat">
+            <div class="sum-value" id="sum-fat">0</div>
+            <div class="sum-label">脂肪 g</div>
+          </div>
+          <div class="diet-summary-item sum-cal">
+            <div class="sum-value" id="sum-cal">0</div>
+            <div class="sum-label">热量 kcal</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== 时间分配 ====== -->
+      <section class="section" id="section-time" aria-labelledby="time-title">
+        <div class="section-title section-title-row">
+          <div class="section-title-left">
+            <span class="icon"><img src="ui/time.svg" alt="" /></span><h2 class="section-heading" id="time-title">时间分配</h2>
+            <button type="button" id="td-overview-btn" class="td-open-btn td-overview-btn" aria-haspopup="dialog">总览</button>
+            <label class="ui-switch-wrapper">
+              <input type="checkbox" id="td-fusion-toggle" class="visually-hidden-input" role="switch" />
+              <span class="ui-switch" aria-hidden="true"></span>
+              <span>算入并行事项</span>
+            </label>
+          </div>
+          <button type="button" id="td-open-btn" class="td-open-btn" title="管理标签库与查看今日记录明细" aria-haspopup="dialog">标签库 / 明细</button>
+        </div>
+        <div class="time-grid">
+          <button type="button" class="time-slot" data-key="basic" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/basic.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">基本生活类</span>
+              <span class="slot-summary empty" id="slot-summary-basic">—</span>
+            </span>
+          </button>
+          <button type="button" class="time-slot" data-key="health" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/health.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">身心维护类</span>
+              <span class="slot-summary empty" id="slot-summary-health">—</span>
+            </span>
+          </button>
+          <button type="button" class="time-slot" data-key="learn" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/learn.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">学习内养类</span>
+              <span class="slot-summary empty" id="slot-summary-learn">—</span>
+            </span>
+          </button>
+          <button type="button" class="time-slot" data-key="career" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/career.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">事业发展类</span>
+              <span class="slot-summary empty" id="slot-summary-career">—</span>
+            </span>
+          </button>
+          <button type="button" class="time-slot" data-key="social" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/social.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">人际交往类</span>
+              <span class="slot-summary empty" id="slot-summary-social">—</span>
+            </span>
+          </button>
+          <button type="button" class="time-slot" data-key="entertainment" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/entertainment.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">娱乐消遣类</span>
+              <span class="slot-summary empty" id="slot-summary-entertainment">—</span>
+            </span>
+          </button>
+          <button type="button" class="time-slot" data-key="waste" aria-haspopup="dialog">
+            <span class="slot-emoji" aria-hidden="true"><img src="ui/waste.svg" width="24" height="24" alt="" /></span>
+            <span class="slot-body">
+              <span class="slot-label">无效损耗类</span>
+              <span class="slot-summary empty" id="slot-summary-waste">—</span>
+            </span>
+          </button>
+          <div class="time-total" id="time-total" aria-live="polite">
+            已分配 <span>0m</span> / 24 小时
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== 心情 ====== -->
+      <section class="section" id="section-mood" aria-labelledby="mood-title">
+        <h2 class="section-title" id="mood-title"><span class="icon"><img src="ui/emotion.svg" alt="" /></span>今日心情</h2>
+        <div class="mood-selector" id="mood-selector" role="radiogroup" aria-labelledby="mood-title">
+          <button type="button" class="mood-btn" data-mood="great" role="radio" aria-checked="false">
+            <span class="mood-emoji" aria-hidden="true"><img src="ui/great.svg" width="28" height="28" alt="" /></span>
+            <span class="mood-label">2</span>
+          </button>
+          <button type="button" class="mood-btn" data-mood="good" role="radio" aria-checked="false">
+            <span class="mood-emoji" aria-hidden="true"><img src="ui/good.svg" width="28" height="28" alt="" /></span>
+            <span class="mood-label">1</span>
+          </button>
+          <button type="button" class="mood-btn" data-mood="okay" role="radio" aria-checked="false">
+            <span class="mood-emoji" aria-hidden="true"><img src="ui/okay.svg" width="28" height="28" alt="" /></span>
+            <span class="mood-label">0</span>
+          </button>
+          <button type="button" class="mood-btn" data-mood="bad" role="radio" aria-checked="false">
+            <span class="mood-emoji" aria-hidden="true"><img src="ui/bad.svg" width="28" height="28" alt="" /></span>
+            <span class="mood-label">-1</span>
+          </button>
+          <button type="button" class="mood-btn" data-mood="terrible" role="radio" aria-checked="false">
+            <span class="mood-emoji" aria-hidden="true"><img src="ui/terrible.svg" width="28" height="28" alt="" /></span>
+            <span class="mood-label">-2</span>
+          </button>
+        </div>
+        <div class="mood-note">
+          <textarea id="mood-note" placeholder="记录一下今天的感受（选填）..." rows="3" aria-label="心情备注"></textarea>
+        </div>
+      </section>
+    </main>
+
+    <div class="save-bar">
+      <button type="button" class="save-btn" id="save-btn"><img src="ui/save.svg" width="16" height="16" alt="" /> 保存数据</button>
+      <button type="button" class="exp-btn" id="exp-open-btn" aria-haspopup="dialog"><img src="ui/plan.svg" width="15" height="15" alt="" /> 期望</button>
+      <a href="report.html" class="export-btn"><img src="ui/report.svg" width="15" height="15" alt="" /> 报告</a>
+      <span id="autosave-indicator" class="autosave-indicator" role="status">✓ 已自动保存</span>
+    </div>
+
+  </div>
+
+  <!-- ====== 活动记录全屏面板 ====== -->
+  <dialog id="time-detail-overlay" class="td-dialog" aria-labelledby="td-overlay-title">
+    <div class="td-fullscreen">
+
+      <!-- 头部 -->
+      <div class="td-header">
+        <button type="button" id="td-back" class="td-back-btn">‹ 返回</button>
+        <h2 class="td-title-row" id="td-overlay-title">总览</h2>
+        <div class="td-header-spacer"></div>
+      </div>
+
+      <div class="td-segment-wrap" id="td-segment-wrap">
+        <div class="segmented-control" id="td-fusion-modes" role="radiogroup" aria-label="并行事项展示方式">
+          <label class="segment-label">
+            <input type="radio" name="tdMode" value="include" class="visually-hidden-input" checked />
+            <span>包含并行</span>
+          </label>
+          <label class="segment-label">
+            <input type="radio" name="tdMode" value="pure" class="visually-hidden-input" />
+            <span>单一事项</span>
+          </label>
+          <label class="segment-label">
+            <input type="radio" name="tdMode" value="only" class="visually-hidden-input" />
+            <span>仅并行</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 活动列表 -->
+      <div class="td-table-wrap" id="td-list-view">
+        <div id="td-bars" class="td-bars"></div>
+        <div id="td-empty" class="td-empty">暂无数据，可在规划系统「进行中」开启计时同步</div>
+      </div>
+
+      <!-- 标签库与今日记录明细（默认隐藏） -->
+      <div class="td-add-form" id="td-add-form" hidden>
+        <div class="td-form-field">
+          <span class="td-form-label">标签库（点击分类展开管理标签）</span>
+          <div class="td-tag-selector" id="td-tag-selector"></div>
+        </div>
+
+        <div class="td-records-drawer">
+          <button type="button" id="td-toggle-details-btn" class="td-toggle-details-btn" aria-expanded="false" aria-controls="td-record-details-list">
+            ▼ 展开今日记录明细
+          </button>
+          <div id="td-record-details-list" class="td-record-details-list"></div>
+        </div>
+      </div>
+
+      <!-- 底部操作栏 -->
+      <div class="td-bottom" id="td-bottom-bar">
+        <div class="td-footer">
+          <span>合计 <strong id="td-total">0m</strong></span>
+          <button type="button" id="td-save" class="td-save-btn">确认</button>
+        </div>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- ====== 期望面板 ====== -->
+  <dialog class="exp-dialog" id="exp-overlay" aria-labelledby="exp-title">
+    <div class="exp-panel">
+      <div class="exp-header">
+        <h2 class="exp-title" id="exp-title">期望设定</h2>
+        <button type="button" class="exp-close" id="exp-close" aria-label="关闭">
+          <img src="ui/close.svg" width="10" height="10" alt="" class="icon-mono" />
+        </button>
+      </div>
+      <div id="exp-body"></div>
+      <div class="exp-footer">
+        <button type="button" class="exp-cancel" id="exp-cancel">取消</button>
+        <button type="button" class="exp-save-btn" id="exp-save">保存期望</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" popover="manual" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/entry.js"></script>
+</body>
+
+</html>

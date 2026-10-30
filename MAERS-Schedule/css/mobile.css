@@ -1,0 +1,369 @@
+/**
+ * MAERS Schedule — 移动端响应式与触控体验样式表 (mobile.css)
+ * 独立提取，专门适配 <= 768px 手机与平板屏幕
+ */
+
+@media (max-width: 768px) {
+  /* 全局防横向撑爆与黑边 */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  /* 基础容器 */
+  .app-container {
+    padding: 12px 10px calc(40px + env(safe-area-inset-bottom, 16px));
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* 顶部返航与工具栏：左右分布，彻底杜绝重叠 */
+  .page-topbar {
+    margin-bottom: 10px;
+  }
+
+  .back-link {
+    font-size: 0.76rem;
+    padding: 4px 10px;
+  }
+
+  .header-tools {
+    gap: 5px;
+  }
+
+  .header-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* 品牌标题与主视图切换栏 */
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 1.22rem;
+    justify-content: center;
+  }
+
+  .header-actions {
+    display: flex;
+    width: 100%;
+  }
+
+  .view-tabs {
+    width: 100%;
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+  }
+
+  .view-tab {
+    flex: 1;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 0.82rem;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 任务条目移动端自适应 */
+  .task-item {
+    padding: 10px;
+    min-height: 44px;
+    touch-action: pan-y;
+    align-items: center;
+  }
+
+  .task-check {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  .task-title {
+    font-size: 0.88rem;
+  }
+
+  /* 移动端无 hover，任务操作按钮需常显且具备足够触控热区 */
+  .task-item .task-actions {
+    opacity: 1;
+    gap: 4px;
+  }
+
+  .task-action-btn {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  /* 时间轴 (Timeline) 移动端自适应 */
+  .timeline-toolbar {
+    margin-bottom: 10px;
+  }
+
+  .timeline-sort-menu {
+    min-width: min(280px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+  }
+
+  .timeline-section {
+    margin-bottom: 18px;
+  }
+
+  #short-list {
+    max-height: 250px;
+  }
+
+  .goal-card,
+  .vision-card {
+    padding: 12px 14px;
+    touch-action: pan-y;
+  }
+
+  .quadrant-header {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .quadrant-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  /* 移动端目标日期上下紧凑双行右对齐，留出充足左侧标题空间 */
+  .goal-dates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+
+  /* 移动端始终显示卡片的操作按钮与拖拽手柄 */
+  .task-item .task-actions,
+  .goal-card .quadrant-header-right .task-action-btn,
+  .goal-card .quadrant-header-right .drag-handle,
+  .vision-card .quadrant-header-right .task-action-btn,
+  .vision-card .quadrant-header-right .drag-handle {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* 移动端拖拽专职手柄：扩大点击与滑动触控热区，屏蔽浏览器原生滚动争抢，固定于最右侧 */
+  .drag-handle {
+    width: 32px;
+    height: 32px;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .goal-subtask {
+    padding: 5px 0;
+    font-size: 0.82rem;
+  }
+
+  /* 规划表 (Time Block) 顶部紧凑双排工具栏 */
+  .tb-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .tb-nav-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .tb-date-pager {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .tb-week-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0 2px;
+    min-width: 0;
+  }
+
+  .tb-date-input {
+    width: auto;
+    min-width: 72px;
+    font-size: 0.72rem;
+    padding: 5px 2px;
+  }
+
+  .tb-nav-btn.tb-arrow-btn {
+    min-height: 32px;
+    padding: 4px 8px;
+  }
+
+  .tb-quick-btns {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .tb-quick-btns .tb-nav-btn {
+    min-height: 32px;
+    padding: 4px 10px;
+    font-size: 0.76rem;
+  }
+
+  .tb-segment-tabs {
+    width: 100%;
+    margin-left: 0;
+    display: flex;
+  }
+
+  .tb-seg-btn {
+    flex: 1;
+    min-height: 30px;
+    padding: 4px 0;
+    text-align: center;
+    font-size: 0.78rem;
+  }
+
+  /* 规划表主体：一屏精准展示 3 列（昨天 | 今天居中 | 明天），无边缘半截裁切 */
+  .tb-wrapper {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    border-radius: var(--radius-sm);
+  }
+
+  .tb-hour-col {
+    position: sticky;
+    left: 0;
+    z-index: 25;
+    flex: 0 0 40px;
+    width: 40px;
+    background: var(--bg-input);
+    border-right: 1.5px solid var(--border-ink);
+    box-shadow: 2px 0 0px rgba(26, 25, 23, 0.08);
+  }
+
+  .tb-header-cell {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg-input);
+  }
+
+  .tb-day-col:not(.tb-ideal-col) {
+    flex: 0 0 calc((100% - 40px) / 3);
+    min-width: calc((100% - 40px) / 3);
+  }
+
+  .tb-ideal-col:not(.collapsed) {
+    flex: 0 0 calc((100% - 40px) / 3);
+    min-width: calc((100% - 40px) / 3);
+  }
+
+  .tb-block {
+    touch-action: manipulation;
+    padding: 3px 5px;
+  }
+
+  .tb-block-label {
+    font-size: 0.7rem;
+  }
+
+  .tb-block-time {
+    font-size: 0.58rem;
+  }
+
+  .tb-block:active {
+    filter: brightness(1.08);
+    transform: scale(0.98);
+  }
+
+  /* 移动端底部抽屉 (Bottom Sheet)：dialog 的贴底定位与入场动画见 common/css/components.css，此处仅调整面板外观 */
+  .modal,
+  .tb-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    border-bottom: none;
+    padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 16px));
+    max-height: 86vh;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+  }
+
+  .modal-input {
+    font-size: 16px; /* 防止 iOS Safari 自动缩放页面 */
+    padding: 10px 12px;
+  }
+
+  #tb-block-date,
+  #tb-block-start,
+  #tb-block-end {
+    font-size: 0.86rem;
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .modal-actions {
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .modal-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    min-height: 42px;
+  }
+
+  .q-option {
+    padding: 9px 6px;
+    font-size: 0.78rem;
+    min-height: 38px;
+  }
+}
+
+/* 触屏设备取消悬浮位移粘滞 */
+@media (hover: none) {
+  .back-link:hover,
+  .header-icon-btn:hover,
+  .timeline-inline-add:hover,
+  .ip-add-card:hover,
+  .tb-nav-btn:hover,
+  .tb-block:hover {
+    transform: none;
+  }
+}
