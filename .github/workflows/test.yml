@@ -1,0 +1,33 @@
+name: test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # 静态检查（ESLint）
+      - run: npm run lint
+      # 预缓存清单由脚本生成：提交时必须已包含最新版本，否则线上 Service Worker 不会换代
+      - run: npm run build:precache
+      - run: git diff --exit-code -- precache-manifest.js
+      # 单元 / 集成 / 静态契约测试，附带覆盖率阈值（已统计前端页面脚本）
+      - run: npm run test:coverage
+
+  windows-desktop:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/unit/desktop-build.test.js

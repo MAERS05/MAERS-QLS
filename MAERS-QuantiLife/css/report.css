@@ -1,0 +1,661 @@
+/* ==========================================================================
+   MAERS QuantiLife — 统计报告页样式 (MAERS-QuantiLife/css/report.css)
+   依赖：common/css/base.css, common/css/components.css
+   ========================================================================== */
+
+/* === Header（基础排版见 common/css/base.css） === */
+.report-header .subtitle {
+  font-family: var(--font-mono);
+  color: var(--kraft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* === Range Picker (手账日期区间印章栏) === */
+.range-picker {
+  margin-bottom: 18px;
+}
+
+.range-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.range-inputs input {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 7px 10px;
+  width: 124px;
+  text-align: center;
+  outline: none;
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.14);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.range-inputs input:hover,
+.range-inputs input:focus {
+  background: var(--bg-input);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-ink);
+}
+
+.range-sep {
+  font-family: var(--font-mono);
+  color: var(--text-sub);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.range-presets {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 5px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.12);
+  transition: all var(--transition);
+}
+
+.preset-btn:hover {
+  background: var(--bg-input);
+  color: var(--text-main);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-ink);
+}
+
+.preset-btn.active {
+  background: var(--accent);
+  border-color: var(--border-ink);
+  color: var(--accent-fg);
+  font-weight: 700;
+}
+
+/* === Chart Controls === */
+.chart-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.12);
+}
+
+.ctrl-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctrl-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ctrl-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.ctrl-step {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  line-height: 1;
+}
+
+.ctrl-step:hover {
+  background: var(--bg-input-focus);
+}
+
+.ctrl-num {
+  width: 44px;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--border-ink);
+  border-right: 1px solid var(--border-ink);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 5px 2px;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.ctrl-num::-webkit-inner-spin-button,
+.ctrl-num::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.ctrl-unit {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.ctrl-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+.ctrl-reset {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.ctrl-reset:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* === Empty State === */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+
+.empty-state .empty-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.empty-state .empty-icon img {
+  opacity: 0.55;
+}
+
+.empty-state .empty-text {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+
+/* === 报告主体手账内页大卡片（从概览到心情分布） === */
+#report-content {
+  max-height: max(380px, calc(100dvh - 324px));
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* === Section Chapter（基础分段与标题见 common/css/base.css） === */
+.section {
+  overflow: hidden;
+}
+
+/* 拖拽提示与刻度说明：标题行内靠右，图表标题内紧跟文字 */
+.section-hint {
+  font-weight: 400;
+  font-size: 0.7rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
+
+.section-title .section-hint {
+  margin-left: auto;
+}
+
+/* === KPI Grid (牛皮纸指标贴块) === */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.kpi-card {
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  padding: 16px 12px;
+  text-align: center;
+  box-shadow: 2px 2px 0px rgba(26, 25, 23, 0.12);
+}
+
+.kpi-card .kpi-icon {
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.kpi-card .kpi-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+}
+
+.kpi-total {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.kpi-card .kpi-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* === Chart Scroll Wrapper === */
+.chart-container {
+  margin-bottom: 20px;
+}
+
+.chart-container.is-spaced {
+  margin-top: 20px;
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+.chart-title-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* 图例：色点颜色由行内 --dot-color 变量提供 */
+.chart-legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-left: 6px;
+}
+
+.chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--text-sub);
+}
+
+.chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text-dim));
+  flex-shrink: 0;
+}
+
+.chart-scroll-wrap {
+  overflow-x: scroll;
+  overflow-y: visible;
+  cursor: grab;
+  user-select: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chart-scroll-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.chart-scroll-wrap:active,
+.chart-scroll-wrap.is-grabbing {
+  cursor: grabbing;
+}
+
+.chart-svg {
+  display: block;
+  min-width: 100%;
+  height: auto;
+}
+
+/* === SVG Chart Elements === */
+.chart-grid-line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.chart-axis-label {
+  fill: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font);
+}
+
+.chart-x-label {
+  fill: var(--text-dim);
+  font-size: 9px;
+  font-family: var(--font);
+  text-anchor: middle;
+}
+
+/* 参考线：年份分隔、期望值、均值 */
+.chart-year-line {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.chart-year-label {
+  fill: var(--text-dim);
+  font-size: 9px;
+  font-family: var(--font);
+}
+
+.chart-goal-line {
+  stroke: var(--accent);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.chart-goal-label {
+  fill: var(--accent);
+  font-size: 9px;
+  font-family: var(--font);
+}
+
+.chart-avg-line {
+  stroke: var(--text-sub);
+  stroke-opacity: 0.55;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+
+.chart-avg-label {
+  fill: var(--text-sub);
+  font-size: 9px;
+  font-family: var(--font);
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--series-color, var(--text-sub));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-line-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+
+.chart-area {
+  fill: var(--series-color, var(--text-sub));
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.chart-dot {
+  stroke: var(--series-color, var(--text-sub));
+  stroke-width: 2;
+  fill: var(--bg-base);
+  transition: r 0.2s ease;
+  cursor: default;
+}
+
+.chart-dot:hover {
+  r: 8;
+}
+
+.chart-series {
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.chart-series .chart-line {
+  transition: stroke-width 0.2s ease;
+}
+
+.chart-series .chart-area {
+  transition: opacity 0.2s ease;
+}
+
+.chart-series.series-highlighted .chart-line {
+  stroke-width: 3;
+}
+
+.chart-series.series-highlighted .chart-dot {
+  r: 7;
+}
+
+.chart-series.series-highlighted .chart-area {
+  opacity: 0.22;
+}
+
+.chart-series.series-dimmed {
+  opacity: 0.18;
+}
+
+/* === Pie / Donut Chart === */
+.pie-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pie-chart {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text-dim));
+  flex-shrink: 0;
+}
+
+.legend-name {
+  min-width: 60px;
+}
+
+.legend-val {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.legend-pct {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+}
+
+/* === Mood Distribution === */
+.mood-dist {
+  display: flex;
+  gap: 8px;
+}
+
+.mood-dist-item {
+  flex: 1;
+  text-align: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 12px 4px;
+}
+
+.mood-dist-item .md-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-dist-item .md-emoji img {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.mood-dist-item .md-count {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 4px;
+}
+
+.mood-dist-item .md-pct {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* 报告页排行区：模式切换与饼图空状态（排行条主体样式见 common/css/components.css） */
+.report-mode-switch {
+  margin-bottom: 16px;
+}
+
+.pie-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+/* === 响应式适配 === */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px 10px 24px;
+  }
+
+  .range-presets {
+    gap: 5px;
+  }
+
+  .preset-btn {
+    padding: 3px 10px;
+    font-size: 0.68rem;
+  }
+
+  .chart-controls {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .ctrl-item {
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .ctrl-label {
+    font-size: 0.64rem;
+  }
+
+  .ctrl-step {
+    font-size: 0.78rem;
+    padding: 2px 5px;
+  }
+
+  .ctrl-num {
+    width: 24px;
+    font-size: 0.7rem;
+    padding: 2px 0;
+  }
+
+  .ctrl-unit {
+    font-size: 0.6rem;
+  }
+
+  .ctrl-reset {
+    font-size: 0.64rem;
+    padding: 3px 7px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ctrl-divider {
+    display: none;
+  }
+  .section {
+    padding: 16px;
+  }
+}
