@@ -1,0 +1,802 @@
+/* ==========================================================================
+   MAERS Schedule — 弹窗与表单交互组件样式 (modals.css)
+   包含：任务弹窗 (Task Modal)、长期愿景弹窗 (Goal Modal)、时间块弹窗 (Block Modal)
+   ========================================================================== */
+
+/* === 弹窗面板（外层 6px 书页圆角 → 内部框体 4px → 表单控件 3px → 标签 2px） ===
+   外层为 <dialog class="modal-dialog">，遮罩、入场动画与移动端底部抽屉由 common/css/components.css 统一提供 */
+.modal {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-ink);
+  border-radius: var(--radius-sheet);
+  padding: 22px 24px;
+  width: min(90vw, 480px);
+  max-height: 85vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  box-shadow: var(--shadow-modal);
+}
+
+.tb-modal {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-ink);
+  border-radius: var(--radius-sheet);
+  padding: 22px 24px;
+  width: min(90vw, 390px);
+  max-height: 85vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  box-shadow: var(--shadow-modal);
+}
+
+#tb-modal > .tb-modal {
+  overflow: visible;
+}
+
+.tb-templates-desc {
+  margin: 0 0 16px;
+  color: var(--text-sub);
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.tb-templates-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tb-template-row,
+.tb-template-create {
+  display: flex;
+  gap: 8px;
+}
+
+.tb-template-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    transform var(--transition-press);
+}
+
+.tb-template-choice:hover {
+  border-color: var(--border-ink);
+}
+
+.tb-template-choice:active {
+  transform: translate(0.5px, 0.5px);
+}
+
+.tb-template-choice.active {
+  border-color: var(--border-ink);
+  background: var(--accent-subtle);
+  box-shadow: var(--shadow-control);
+}
+
+.tb-template-status {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  color: var(--kraft);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.tb-template-action,
+.tb-template-delete {
+  min-inline-size: 40px;
+  padding-inline: 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background-color var(--transition),
+    transform var(--transition-press);
+}
+
+.tb-template-action:hover {
+  border-color: var(--border-ink);
+  color: var(--text-main);
+  background: var(--bg-input);
+}
+
+.tb-template-delete:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(184, 68, 60, 0.08);
+}
+
+.tb-template-action:active,
+.tb-template-delete:active {
+  transform: translate(0.5px, 0.5px);
+}
+
+.tb-template-create .modal-input,
+.tb-template-rename {
+  flex: 1;
+  min-width: 0;
+}
+
+.tb-template-create .modal-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 42px;
+  padding-inline: 12px;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.modal-title {
+  margin: 0 0 16px;
+  padding-bottom: 11px;
+  border-bottom: 1.5px dashed var(--border);
+  font-family: var(--font);
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: var(--text-title);
+}
+
+html[data-theme="dark"] .modal-title {
+  color: var(--text-main);
+}
+
+.tb-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 11px;
+  border-bottom: 1.5px dashed var(--border);
+}
+
+.tb-modal-head .modal-title {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.tb-step-settings {
+  position: relative;
+  z-index: 10;
+}
+
+.tb-step-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-ink);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  box-shadow: var(--shadow-control);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+}
+
+.tb-step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .tb-step-btn:hover {
+    background: var(--bg-input);
+    color: var(--text-main);
+    transform: translate(-0.5px, -0.5px);
+    box-shadow: var(--shadow-ink);
+  }
+}
+
+.tb-step-settings.open .tb-step-btn {
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.tb-step-popover {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  z-index: 30;
+  padding: 7px 9px;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-modal);
+  white-space: nowrap;
+  transform-origin: top right;
+  animation: qls-popover-in 0.16s var(--ease-out);
+}
+
+.tb-step-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-sub);
+  margin-bottom: 4px;
+}
+
+.tb-step-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tb-step-opt {
+  width: 100%;
+  padding: 1px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .tb-step-opt:hover:not(.active) {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border-color: var(--border-ink);
+  }
+}
+
+.tb-step-opt.active {
+  background: var(--accent);
+  border-color: var(--border-ink);
+  color: var(--accent-fg);
+  font-weight: 700;
+}
+
+/* === 表单字段与输入控件 === */
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-field-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-field-col-date {
+  flex: 1.45;
+  min-width: 0;
+}
+
+.modal-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--kraft);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.modal-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  outline: none;
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.modal-input:hover {
+  border-color: var(--border-ink);
+}
+
+.modal-input:focus {
+  border-color: var(--border-focus);
+  background: var(--bg-card);
+  box-shadow: var(--surface-highlight), var(--shadow-focus-ring);
+}
+
+.modal-input::placeholder {
+  color: var(--text-dim);
+}
+
+.modal-input-center {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 9px 6px;
+}
+
+.modal-input-ideal {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  background: var(--accent-subtle);
+  font-weight: 600;
+  text-align: center;
+  padding: 9px 6px;
+}
+
+textarea.modal-input {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* === 重要紧急程度选择器（手账印章框） === */
+.quadrant-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.q-option {
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.q-option:hover {
+  border-color: var(--border-ink);
+  color: var(--text-main);
+}
+
+.q-option:active {
+  transform: translate(0.5px, 0.5px);
+}
+
+.q-option.selected {
+  border-color: var(--border-ink);
+  color: var(--text-main);
+  font-weight: 700;
+  background: var(--accent-subtle);
+  box-shadow: var(--shadow-control);
+}
+
+.q-option-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 1.5px;
+  border: 1px solid var(--border-ink);
+  flex-shrink: 0;
+}
+
+.q-option[data-q="do"] .q-option-dot { background: var(--q-do); }
+.q-option[data-q="delegate"] .q-option-dot { background: var(--q-delegate); }
+.q-option[data-q="plan"] .q-option-dot { background: var(--q-plan); }
+.q-option[data-q="eliminate"] .q-option-dot { background: var(--q-eliminate); }
+
+/* === 时间块颜色与 QL 标签选择器 === */
+.tb-tag-picker-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(105px, 1fr);
+  gap: 6px 12px;
+  align-items: start;
+}
+
+.tb-tag-label-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  min-width: 0;
+}
+
+.tb-tag-label-wrap .modal-label {
+  margin-bottom: 0;
+}
+
+.tb-tag-error-tip {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 2px);
+  font-size: 0.68rem;
+  color: var(--danger);
+  background: var(--bg-elevated);
+  padding: 1px 4px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tb-tag-error-tip.is-visible {
+  opacity: 1;
+}
+
+.tb-tag-search-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tb-tag-search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+  flex: 1;
+  min-width: 0;
+  transition: border-color var(--transition);
+}
+
+.tb-tag-search-box:focus-within {
+  border-color: var(--border-focus);
+}
+
+.tb-tag-search-icon {
+  margin-right: 4px;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+
+.tb-tag-search-input {
+  border: none;
+  background: transparent;
+  font-size: 0.74rem;
+  color: var(--text-main);
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  font-weight: normal;
+  padding: 0;
+}
+
+.tb-tag-add-btn {
+  width: 22px;
+  height: 22px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background-color var(--transition),
+    transform var(--transition-press);
+  outline: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.tb-tag-add-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.tb-tag-add-btn:active {
+  transform: translate(0.5px, 0.5px);
+}
+
+.tb-color-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+/* 分类名称在色块行末尾居中：flex:1 使其占满第二行剩余空间，文字居中对齐上方空出的色块位置 */
+.tb-selected-category {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex: 1;
+  min-width: 60px;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  white-space: nowrap;
+}
+
+.tb-color-swatch {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background: var(--swatch-color);
+  cursor: pointer;
+  transition:
+    transform 0.24s var(--ease-out),
+    border-color 0.2s var(--ease-out);
+  border: 2px solid transparent;
+}
+
+.tb-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.tb-color-swatch.selected {
+  border-color: var(--text-main);
+  transform: scale(1.1);
+}
+
+.tb-tag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 44px;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+@supports not (scrollbar-color: auto) {
+  .tb-tag-suggestions::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .tb-tag-suggestions::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-xs);
+  }
+}
+
+/* 标签芯片配色跟随当前分类（由 #ip-tag-suggestions 的 --chip-color 提供）：2px 纸条贴签 */
+.tb-tag-chip {
+  --chip-color: var(--accent);
+  background: color-mix(in srgb, var(--chip-color) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chip-color) 32%, transparent);
+  border-radius: var(--radius-xs);
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--chip-color);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    transform var(--transition-press);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.tb-tag-suggestions .tb-tag-chip {
+  --chip-color: inherit;
+}
+
+.tb-tag-chip:hover {
+  background: color-mix(in srgb, var(--chip-color) 20%, transparent);
+  border-color: color-mix(in srgb, var(--chip-color) 50%, transparent);
+}
+
+.tb-tag-chip:active {
+  transform: translate(0.5px, 0.5px);
+}
+
+.tb-tag-empty {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* === 底部操作栏与按钮（裁纸墨框按钮 + 按压回馈） === */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1.5px dashed var(--border);
+}
+
+.modal-spacer {
+  flex: 1;
+}
+
+.modal-btn {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-ink);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-control);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+}
+
+.modal-btn:hover {
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+.modal-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+.modal-btn-cancel {
+  background: var(--bg-card);
+  border-color: var(--border-ink);
+  color: var(--text-sub);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.modal-btn-save {
+  background: var(--accent);
+  border-color: var(--border-ink);
+  color: var(--accent-fg);
+}
+
+.modal-btn-save:hover {
+  background: var(--accent-hover);
+}
+
+.modal-btn-del {
+  background: rgba(184, 68, 60, 0.1);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.modal-btn-del:hover {
+  background: rgba(184, 68, 60, 0.18);
+}
+
+.modal-btn-missed {
+  background: var(--bg-input);
+  color: var(--text-sub);
+  border-color: var(--border);
+}
+
+.modal-btn-missed:hover {
+  background: var(--bg-input-focus);
+  border-color: var(--border-ink);
+  color: var(--text-main);
+}
+
+.modal-btn-missed.active {
+  background: var(--bg-input-focus);
+  color: var(--text-main);
+  border-color: var(--border-ink);
+}
+
+.tb-del-desc {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+.tb-del-scopes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.tb-del-scope-btn {
+  padding: 9px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background-color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+  white-space: nowrap;
+}
+
+.tb-del-scope-btn:hover {
+  border-color: var(--border-ink);
+  color: var(--text-main);
+}
+
+.tb-del-scope-btn:active {
+  transform: translate(0.5px, 0.5px);
+}
+
+.tb-del-scope-btn.selected {
+  border-color: var(--border-ink);
+  color: var(--text-main);
+  font-weight: 700;
+  background: var(--accent-subtle);
+  box-shadow: var(--shadow-control);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-step-popover {
+    animation: none;
+  }
+
+  .tb-template-choice,
+  .tb-template-action,
+  .tb-template-delete,
+  .tb-step-btn,
+  .q-option,
+  .tb-tag-add-btn,
+  .tb-color-swatch,
+  .tb-tag-chip,
+  .modal-btn,
+  .tb-del-scope-btn {
+    transition: none;
+  }
+}
+

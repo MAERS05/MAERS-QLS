@@ -1,0 +1,1475 @@
+/* ==========================================================================
+   MAERS QLS — 全局公共交互组件样式 (common/css/components.css)
+   包含：原生弹窗基座、手账日历弹窗、滚轮时间选择器、跨系统联动浮窗、通用排行条形图
+   ========================================================================== */
+
+/* ==========================================================================
+   0. 原生 <dialog> 弹窗基座
+   所有模态弹窗均为 <dialog> + showModal()：由浏览器提供 top layer、焦点陷阱与 Esc 关闭，
+   dialog 元素本身只作透明容器，视觉面板由内部 .modal / .wp-panel 等负责。
+   ========================================================================== */
+dialog.modal-dialog,
+.td-dialog,
+.exp-dialog,
+.calendar-dialog,
+.wp-dialog,
+.ql-record-dialog,
+.project-guide-dialog {
+  /* 全局重置 * { margin: 0 } 会覆盖 UA 的 margin:auto，须显式声明才能让模态居中 */
+  margin: auto;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+}
+
+dialog.modal-dialog::backdrop,
+.td-dialog::backdrop,
+.exp-dialog::backdrop,
+.wp-dialog::backdrop,
+.project-guide-dialog::backdrop {
+  background: rgba(28, 25, 22, 0.44);
+}
+
+/* 日历与联动浮窗为锚定式弹层，不遮蔽背景 */
+.calendar-dialog::backdrop,
+.ql-record-dialog::backdrop {
+  background: transparent;
+}
+
+dialog.modal-dialog[open],
+.td-dialog[open],
+.exp-dialog[open],
+.wp-dialog[open],
+.project-guide-dialog[open] {
+  animation: qls-dialog-in 0.22s var(--ease-out);
+}
+
+.calendar-dialog[open] .calendar-popup {
+  transform-origin: top center;
+  animation: qls-popover-in 0.18s var(--ease-out);
+}
+
+.ql-record-dialog[open] .ql-record-panel {
+  transform-origin: top right;
+  animation: qls-popover-in 0.18s var(--ease-out);
+}
+
+/* 遮罩同步淡入，避免背景突然变暗 */
+dialog.modal-dialog[open]::backdrop,
+.td-dialog[open]::backdrop,
+.exp-dialog[open]::backdrop,
+.wp-dialog[open]::backdrop,
+.project-guide-dialog[open]::backdrop {
+  animation: qls-backdrop-in 0.16s ease;
+}
+
+@keyframes qls-dialog-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 8px;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes qls-backdrop-in {
+  from {
+    background-color: rgba(28, 25, 22, 0);
+  }
+
+  to {
+    background-color: rgba(28, 25, 22, 0.44);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog[open],
+  dialog[open]::backdrop,
+  .calendar-dialog[open] .calendar-popup,
+  .ql-record-dialog[open] .ql-record-panel {
+    animation: none;
+  }
+}
+
+/* 模态打开时锁定页面滚动 */
+html:has(dialog[open]:modal) {
+  overflow: hidden;
+}
+
+/* 没有外侧阴影的带框组件使用内侧高光；零特异性保留各组件的状态阴影。 */
+:where(
+  .data-mode-field select, .data-import-actions button,
+  .cal-selection-summary, .cal-mode-switch, .cal-freq-band,
+  .cal-rep-week-btn, .cal-rep-month-btn,
+  .cal-num-input:hover, .cal-num-input:focus,
+  .cal-day.today, .cal-day.selected, .cal-day:hover,
+  .cal-mode-btn.active, .cal-rep-day-btn.selected,
+  .wp-highlight, .wp-cancel, .wp-confirm,
+  .ql-bridge-item, .td-bar-track, .td-bar-clickable:hover,
+  .segment-label:has(input[type="radio"]:checked),
+  .project-guide-notice, .entry-opt, .card-icon,
+  .transfer-roles, .transfer-roles button[aria-pressed="true"],
+  .transfer-field textarea, .transfer-field input,
+  .transfer-preview, .transfer-short-code, .transfer-copy:hover,
+  .ip-count, .ip-history-empty, .ip-add-card,
+  .ip-tag-badge, .ip-status-badge, .ip-timer-box, .ip-segments,
+  .ip-settle-seg-row, .ip-settle-time-input, .ip-settle-add-seg,
+  .ip-settle-total-box, .ip-settle-total-input, .ip-mood-opt.active,
+  .tb-template-choice, .tb-template-action, .tb-template-delete,
+  .tb-step-opt, .modal-input, .q-option, .q-option-dot,
+  .tb-tag-search-box, .tb-tag-add-btn, .tb-del-scope-btn,
+  .tb-color-swatch.selected, .tb-tag-chip, .tb-seg-btn.active,
+  .task-item, .task-check, .task-q-indicator,
+  .sort-sub-options, .sort-sub-btn, .timeline-count,
+  .timeline-inline-add, .goal-progress-bar,
+  .view-tab[aria-selected="true"], .view-tab:hover,
+  .task-action-btn:hover, .sort-menu-item.active,
+  .timeline-ctx-item:hover, .timeline-ctx-item:focus-visible,
+  .food-item, .add-btn, .mood-btn, .mood-note textarea,
+  .td-tag-chip-btn, .tag-add-input, .add-new-tag-btn,
+  .td-toggle-details-btn, .record-item, .record-tag-badge,
+  .exp-basic-row, .exp-food-row, .exp-add-btn,
+  .exp-time-cat, .exp-time-dot, .exp-time-item, .exp-ti-del,
+  .exp-sync-btn, .exp-mood-btn,
+  .ctrl-input-wrap, .chart-legend-dot, .legend-dot
+) {
+  box-shadow: var(--surface-highlight);
+}
+
+/* 横排切换控件：内框常驻；时段筛选点击，单选切换栏长按后跟手滑动。 */
+.row-control-group {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  touch-action: pan-y pinch-zoom;
+  --row-highlight: var(--accent);
+  --row-target-color: var(--accent-fg);
+}
+
+.row-control-group[data-row-sliding] {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.row-control-group[data-row-kind="multi"] {
+  --row-highlight: var(--bg-input-focus);
+  --row-target-color: var(--text-main);
+}
+
+.row-control-group[data-row-kind] > .row-control-item:is(button, a, label) {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-sub);
+  box-shadow: none;
+  transform: none;
+  scale: 1;
+  outline-offset: -3px;
+  transition: color 140ms ease;
+}
+
+.row-control-group[data-row-kind] > .row-control-item[data-row-target] {
+  color: var(--row-target-color);
+}
+
+.row-control-group[data-row-kind="multi"] > .row-control-item[data-row-selected] {
+  background: var(--accent);
+  border-color: var(--border-ink);
+  color: var(--accent-fg);
+  box-shadow: var(--surface-highlight);
+}
+
+.row-control-group[data-row-kind="multi"] > .row-control-indicator {
+  z-index: 2;
+  background: transparent;
+}
+
+.row-control-indicator {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: var(--row-width, 0px);
+  height: var(--row-height, 0px);
+  border: 1px solid color-mix(in srgb, var(--border-ink) 55%, transparent);
+  border-radius: var(--radius);
+  background: var(--row-highlight);
+  box-shadow: var(--shadow-control);
+  transform: translate3d(var(--row-x, 0px), var(--row-y, 0px), 0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.row-control-group[data-row-visible] > .row-control-indicator {
+  opacity: 1;
+}
+
+.row-control-group[data-row-ready] > .row-control-indicator {
+  transition: opacity 140ms ease, background-color 140ms ease;
+}
+
+.row-control-group[data-row-sliding] > .row-control-indicator {
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), opacity 140ms ease, background-color 140ms ease;
+}
+
+.row-control-group[data-row-following] > .row-control-indicator {
+  transition: opacity 100ms ease, background-color 140ms ease;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-control-group[data-row-ready] > .row-control-indicator {
+    transition: opacity 120ms ease, background-color 120ms ease;
+  }
+}
+
+/* 数据导入与设备接收共用的处理方式选择。 */
+button[data-json-drop].is-file-dragover {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.data-mode-field {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.data-mode-field label {
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.data-mode-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.data-mode-help {
+  margin: 12px 0;
+  color: var(--text-sub);
+  font-size: 0.83rem;
+  line-height: 1.7;
+}
+
+.data-import-panel {
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  color: var(--text-main);
+  border: 2px solid var(--border-ink);
+  border-radius: var(--radius-sheet);
+  box-shadow: var(--shadow-modal);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.data-import-panel h2 {
+  color: var(--text-title);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.data-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.data-import-actions button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.data-import-actions button:hover {
+  background: var(--bg-elevated);
+}
+
+.data-import-actions .data-import-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.data-import-actions .data-import-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ==========================================================================
+   1. 统一手账日历弹窗 (Calendar Popup)
+   桌面端由 JS 写入 left/top（锚点水平中心），未写入时使用下方默认位置。
+   ========================================================================== */
+.calendar-dialog {
+  margin: 0;
+  inset: auto;
+  left: 50%;
+  top: 120px;
+  transform: translateX(-50%);
+}
+
+.calendar-popup {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-ink);
+  border-radius: var(--radius-sheet);
+  padding: 16px 18px;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  box-shadow: var(--shadow-modal);
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1.5px dashed var(--border);
+}
+
+.cal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cal-label {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.cal-num-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 3px 2px;
+  outline: none;
+  transition:
+    border-color var(--transition),
+    background-color var(--transition);
+  -moz-appearance: textfield;
+}
+
+.cal-num-input::-webkit-inner-spin-button,
+.cal-num-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cal-year {
+  width: 50px;
+}
+
+.cal-month {
+  width: 28px;
+}
+
+.cal-day-input {
+  width: 28px;
+}
+
+.cal-num-input:hover {
+  border-color: var(--border);
+  background: var(--bg-input);
+}
+
+.cal-num-input:focus {
+  border-color: var(--border-ink);
+  background: var(--bg-input-focus);
+}
+
+.cal-num-input::placeholder {
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.cal-header button {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  color: var(--text-main);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-control);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition:
+    background-color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-header button:hover {
+  background: var(--bg-input);
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+.cal-header button:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.cal-weekdays span {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--kraft);
+  font-weight: 700;
+  padding: 4px 0;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-day {
+  position: relative;
+  text-align: center;
+  padding: 7px 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  background: transparent;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+  border: 1px solid transparent;
+}
+
+.cal-day:hover {
+  background: var(--bg-input-focus);
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+.cal-day:active {
+  background: var(--accent-subtle);
+}
+
+.cal-day.today {
+  color: var(--text-main);
+  font-weight: 700;
+  border-color: var(--border-ink);
+  background: var(--bg-input);
+}
+
+.cal-day.selected {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--border-ink);
+  font-weight: 700;
+}
+
+.cal-day.other-month {
+  color: var(--text-dim);
+  opacity: 0.4;
+}
+
+.cal-day.has-data::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.cal-day.selected.has-data::after {
+  background: var(--accent-fg);
+  opacity: 0.85;
+}
+
+.cal-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.cal-today-btn,
+.cal-clear-btn {
+  min-width: 32px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  box-shadow: var(--shadow-control);
+  font-family: var(--font);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-today-btn {
+  padding: 0 11px;
+  color: var(--text-main);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.cal-today-btn:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+.cal-today-btn:active,
+.cal-clear-btn:active,
+.cal-confirm-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+.cal-clear-btn {
+  padding: 0 11px;
+  color: var(--text-sub);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cal-clear-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(184, 68, 60, 0.08);
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+/* 跨日区间与多日选择扩展样式 */
+.cal-day.in-range {
+  background: var(--accent-subtle);
+  color: var(--text-main);
+  font-weight: 600;
+  border-radius: 1px;
+}
+
+.cal-day.range-start {
+  border-top-right-radius: 1px;
+  border-bottom-right-radius: 1px;
+}
+
+.cal-day.range-end {
+  border-top-left-radius: 1px;
+  border-bottom-left-radius: 1px;
+}
+
+.cal-selection-summary {
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: var(--bg-input);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.74rem;
+  color: var(--kraft);
+  line-height: 1.45;
+  word-break: break-all;
+}
+
+.cal-mode-switch {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin: 0 auto 12px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.cal-mode-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.cal-mode-btn:hover {
+  color: var(--text-main);
+}
+
+.cal-mode-btn.active {
+  background: var(--accent);
+  border-color: var(--border-ink);
+  color: var(--accent-fg);
+  font-weight: 700;
+}
+
+.cal-confirm-btn {
+  min-width: 44px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 1.5px solid var(--border-ink);
+  box-shadow: var(--shadow-control);
+  font-family: var(--font);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-confirm-btn:hover {
+  background: var(--accent-hover);
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+/* 重复规则配置视图（统一硬挺纸张印章格，去除圆球与胶囊割裂） */
+.cal-repeat-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cal-repeat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cal-repeat-title {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--kraft);
+}
+
+.cal-freq-picker {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  user-select: none;
+  padding: 2px 0;
+}
+
+.cal-freq-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 30px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  pointer-events: none;
+}
+
+.cal-freq-col {
+  position: relative;
+  z-index: 1;
+  height: 90px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  outline: none;
+}
+
+.cal-freq-col::-webkit-scrollbar {
+  display: none;
+}
+
+.cal-freq-static {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cal-freq-item {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.1s, font-size 0.1s, color 0.1s;
+}
+
+.cal-freq-item.is-near {
+  color: var(--text-sub);
+  font-size: 0.76rem;
+}
+
+.cal-freq-item.is-center {
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.cal-freq-pad {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cal-repeat-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  justify-items: stretch;
+  padding: 2px 0;
+}
+
+.cal-rep-week-btn {
+  height: 30px;
+  padding: 0;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.cal-rep-week-btn:hover {
+  border-color: var(--border-ink);
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.cal-rep-week-btn.selected {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--border-ink);
+  font-weight: 700;
+}
+
+.cal-repeat-months {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.cal-rep-month-btn {
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-sub);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.cal-rep-month-btn:hover {
+  border-color: var(--border-ink);
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.cal-rep-month-btn.selected {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--border-ink);
+  font-weight: 700;
+}
+
+.cal-repeat-monthdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal-rep-day-btn {
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-sub);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.cal-rep-day-btn:hover {
+  background: var(--bg-input-focus);
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+.cal-rep-day-btn.selected {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--border-ink);
+  font-weight: 700;
+}
+
+.cal-rep-last-btn {
+  grid-column: span 2;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   2. 滚轮时间选择器 (Wheel Picker)
+   ========================================================================== */
+.wp-trigger {
+  cursor: pointer;
+}
+
+.wp-trigger:hover {
+  border-color: var(--border-ink);
+}
+
+.wp-panel {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-ink);
+  border-radius: var(--radius-sheet);
+  padding: 18px 22px;
+  width: 280px;
+  box-shadow: var(--shadow-modal);
+}
+
+.wp-title {
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-title);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1.5px dashed var(--border);
+}
+
+.wp-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+}
+
+.wp-col {
+  width: 72px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  height: 220px;
+}
+
+.wp-col::-webkit-scrollbar {
+  display: none;
+}
+
+.wp-item {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.1s, font-size 0.1s, color 0.1s;
+}
+
+.wp-item.is-near {
+  color: var(--text-sub);
+  font-size: 1.05rem;
+}
+
+.wp-item.is-center {
+  color: var(--text-main);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.wp-pad {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.wp-sep {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  padding: 0 2px;
+}
+
+.wp-highlight {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-subtle);
+  border: 1.5px solid var(--border-ink);
+  pointer-events: none;
+}
+
+.wp-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1.5px dashed var(--border);
+}
+
+.wp-btn {
+  padding: 7px 18px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-control);
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+}
+
+.wp-btn:hover {
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+.wp-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+.wp-cancel {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  color: var(--text-sub);
+}
+
+.wp-cancel:hover {
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.wp-confirm {
+  background: var(--accent);
+  border: 1.5px solid var(--border-ink);
+  color: var(--accent-fg);
+  font-weight: 700;
+}
+
+.wp-confirm:hover {
+  background: var(--accent-hover);
+}
+
+/* ==========================================================================
+   3. 跨系统联动浮窗 (Bridge Panel)
+   ========================================================================== */
+.ql-record-btn {
+  position: relative;
+}
+
+.ql-record-btn .ql-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: none;
+}
+
+.ql-record-btn.has-data:not(.viewed) .ql-dot {
+  display: block;
+}
+
+.ql-record-dialog {
+  margin: 58px 20px auto auto;
+}
+
+.ql-record-panel {
+  width: 276px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-ink);
+  border-radius: var(--radius-sheet);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+
+.ql-record-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  border-bottom: 1.5px dashed var(--border);
+}
+
+.ql-record-panel-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--kraft);
+  letter-spacing: 0.06em;
+}
+
+.ql-record-close {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  box-shadow: var(--shadow-control);
+  cursor: pointer;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+}
+
+.ql-record-close:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.ql-record-close:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+.ql-record-date {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 8px 14px 2px;
+  letter-spacing: 0.04em;
+}
+
+.ql-record-body {
+  padding: 6px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.ql-bridge-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  font-size: 0.8rem;
+}
+
+.ql-bridge-name {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.ql-bridge-hours {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.ql-bridge-empty {
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  font-size: 0.76rem;
+  text-align: center;
+  padding: 18px 0;
+}
+
+/* ==========================================================================
+   4. 通用时间排行条形图 (Ranking Bar — 记录页与报告页复用)
+   ========================================================================== */
+.td-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.report-rank-bars {
+  margin-bottom: 20px;
+}
+
+.rank-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.rank-back-btn {
+  padding: 4px 10px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-ink);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-control);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition-press),
+    box-shadow var(--transition-press);
+}
+
+.rank-back-btn:hover {
+  background: var(--bg-input);
+  color: var(--accent);
+  transform: translate(-0.5px, -0.5px);
+  box-shadow: var(--shadow-ink);
+}
+
+.rank-back-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-press);
+}
+
+.rank-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.td-bar-item {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) minmax(68px, max-content);
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 12px;
+}
+
+.td-bar-label {
+  display: block;
+  text-align: right;
+}
+
+.td-bar-name {
+  font-size: 0.86rem;
+  color: var(--text-main);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td-bar-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+/* 手账刻度槽式进度轨 */
+.td-bar-track {
+  height: 9px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+.td-bar-fill {
+  height: 100%;
+  transition: width 0.24s var(--ease-out);
+  min-width: 2px;
+}
+
+.td-bar-fill-fused {
+  height: 100%;
+  opacity: 0.82;
+  transition: width 0.24s var(--ease-out);
+}
+
+/* 填充段首尾圆角：中间拼接处保持平直无缝衔接，整条最右端呈现纸张微切角 */
+.td-bar-track > :first-child {
+  border-top-left-radius: 1.5px;
+  border-bottom-left-radius: 1.5px;
+}
+
+.td-bar-track > :last-child {
+  border-top-right-radius: 1.5px;
+  border-bottom-right-radius: 1.5px;
+}
+
+/* 可点击排行条（下钻分类/组合）为原生 <button>，需重置按钮默认样式 */
+button.td-bar-item {
+  width: calc(100% + 16px);
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.td-bar-clickable {
+  padding: 5px 8px;
+  margin: -5px -8px 7px -8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition);
+}
+
+.td-bar-clickable:hover {
+  background: var(--bg-input);
+  border-color: var(--border);
+}
+
+.td-bar-clickable:active {
+  background: var(--bg-input-focus);
+}
+
+/* 分类/标签组合通常比单个名称长，独立加宽并允许换行，避免压入比例条。 */
+.report-rank-bars .td-combo-item {
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr) minmax(68px, max-content);
+}
+
+.td-combo-item .td-bar-name {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.td-combo-category {
+  display: grid;
+  grid-template-columns: 1.2em max-content;
+  align-items: center;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.td-combo-categories {
+  display: grid;
+  grid-template-columns: max-content;
+  justify-content: end;
+  justify-items: start;
+  row-gap: 2px;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.td-combo-icon {
+  grid-column: 1;
+}
+
+/* ==========================================================================
+   5. 移动端公共弹窗适配
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 通用模态改为底部抽屉 */
+  dialog.modal-dialog {
+    margin: auto auto 0;
+    width: 100%;
+  }
+
+  dialog.modal-dialog[open] {
+    animation-name: qls-sheet-in;
+    animation-duration: 0.24s;
+  }
+
+  @keyframes qls-sheet-in {
+    from {
+      translate: 0 36px;
+      opacity: 0;
+      scale: 1;
+    }
+
+    to {
+      translate: 0 0;
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  .calendar-dialog {
+    top: 72px;
+  }
+
+  .calendar-popup {
+    width: min(336px, calc(100vw - 20px));
+    padding: 14px;
+  }
+
+  .ql-record-dialog {
+    margin: auto 14px 24px;
+    width: calc(100% - 28px);
+  }
+
+  .ql-record-panel {
+    width: 100%;
+  }
+
+  .report-rank-bars .td-combo-item {
+    grid-template-columns: minmax(94px, 108px) minmax(0, 1fr) minmax(52px, max-content);
+    gap: 4px 8px;
+  }
+
+  .td-combo-item .td-bar-label {
+    text-align: left;
+  }
+
+  .td-combo-categories {
+    margin-left: 0;
+  }
+}

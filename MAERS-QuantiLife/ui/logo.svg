@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <linearGradient id="ql-icon-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c49e6c"/>
+      <stop offset="100%" stop-color="#8c683a"/>
+    </linearGradient>
+  </defs>
+  <!-- 左：短柱  中：高柱  右：中柱 — 底部对齐 -->
+  <rect x="1"  y="14" width="5" height="8"  rx="1.2" fill="url(#ql-icon-grad)"/>
+  <rect x="9"  y="2"  width="5" height="20" rx="1.2" fill="url(#ql-icon-grad)"/>
+  <rect x="17" y="8"  width="5" height="14" rx="1.2" fill="url(#ql-icon-grad)"/>
+</svg>
